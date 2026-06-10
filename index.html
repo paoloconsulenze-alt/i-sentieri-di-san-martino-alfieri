@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>I Sentieri di San Martino Alfieri - V1.1</title>
+<title>I Sentieri di San Martino Alfieri - V1.2</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
@@ -20,18 +20,20 @@ header{padding:22px 16px 18px;background:linear-gradient(135deg,#214a33,#477b55)
 #mapPage{display:none;background:#f7ecd8;min-height:100vh;min-height:100dvh} #mapTop{background:white;padding:10px;box-shadow:0 2px 8px #0002;position:sticky;top:0;z-index:900} #mapTitle{font-size:1.05rem;margin:5px 0 8px;line-height:1.15}
 #controls{display:grid;grid-template-columns:1fr 1fr;gap:7px} #controls .btn{margin:0;padding:11px 8px;font-size:.94rem} #map{height:calc(100dvh - 210px);min-height:430px;width:100%;background:#e7eadf} #status{background:white;padding:10px 12px;font-size:.92rem;border-top:1px solid #ddd;min-height:70px}
 .poi{border-left:6px solid #8aad83} .hidden{display:none!important}
+.startEndIcon{background:transparent;border:0}.startEndPin{display:flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:#fff;border:5px solid #111;box-shadow:0 3px 12px #0005;font-size:24px}.startEndLabel{white-space:nowrap;background:#111;color:#fff;border-radius:999px;padding:5px 9px;font-weight:850;font-size:12px;box-shadow:0 2px 8px #0004;margin-top:3px;transform:translateX(-23px)}
+#discover{display:none}
 </style>
 </head>
 <body>
 <div id="appPage">
-<header><h1>I Sentieri di San Martino Alfieri</h1><p>Tra Monferrato e Roero</p><div class="version">Versione 1.1 pulita · due percorsi GPS</div></header>
+<header><h1>I Sentieri di San Martino Alfieri</h1><p>Tra Monferrato e Roero</p><div class="version">Versione 1.2 · partenza/arrivo e schede a richiesta</div></header>
 <main class="container">
 <section class="card"><h2>Scegli il sentiero</h2><p>Questa versione serve a provare la scelta del percorso e la navigazione GPS su due sentieri già tracciati.</p><p class="small"><strong>Nota:</strong> seguire sempre la segnaletica reale. Il GPS può avere errori di alcuni metri.</p></section>
 <section class="grid">
 <div class="card trail" style="border-left-color:var(--blu)"><h2>🔵 Sentiero Azzurro – Tra i Nidi</h2><p>Percorso breve e naturalistico, già collaudato sul campo.</p><div class="meta"><span class="badge">3,54 km</span><span class="badge">traccia alleggerita</span><span class="badge">dislivello 83 m circa</span></div><button class="btn blue" onclick="openTrail('azzurro')">Apri Tra i Nidi</button></div>
 <div class="card trail" style="border-left-color:var(--giallo)"><h2>🟡 Sentiero Giallo – Tra le Vigne</h2><p>Percorso medio tra colline, paesaggio agricolo e vigneti.</p><div class="meta"><span class="badge">6,18 km</span><span class="badge">traccia alleggerita</span><span class="badge">dislivello 108 m circa</span></div><button class="btn yellow" onclick="openTrail('giallo')">Apri Tra le Vigne</button></div>
 <div class="card trail" style="border-left-color:var(--rosso)"><h2>🔴 Percorso Alfieri</h2><p>In preparazione: lo aggiungeremo dopo il rilevamento GPS.</p><button class="btn red" disabled>Prossimamente</button></div>
-<div class="card trail" style="border-left-color:var(--verde)"><h2>📖 Scopri San Martino Alfieri</h2><p>Prime schede panoramiche, agronomiche, storiche e culturali.</p><button class="btn" onclick="document.getElementById('discover').scrollIntoView({behavior:'smooth'})">Vai alle schede</button></div>
+<div class="card trail" style="border-left-color:var(--verde)"><h2>📖 Scopri San Martino Alfieri</h2><p>Prime schede panoramiche, agronomiche, storiche e culturali. Restano nascoste finché non vuoi leggerle.</p><button id="schedeBtn" class="btn" onclick="toggleSchede()">Apri schede</button></div>
 </section>
 <section id="discover" class="card"><h2>Scopri San Martino Alfieri</h2><div class="grid"><div class="poi card"><h3>🌄 Monferrato e Roero</h3><p>San Martino Alfieri è un balcone tra paesaggi diversi: vigne, noccioleti, campi e boschi.</p></div><div class="poi card"><h3>🍇 Le vigne</h3><p>Il Sentiero Giallo racconta il lavoro vitivinicolo che ha modellato le colline e l'identità del paese.</p></div><div class="poi card"><h3>🏰 Gli Alfieri</h3><p>Il Castello e la storia degli Alfieri saranno il cuore culturale del futuro Percorso Alfieri.</p></div><div class="poi card"><h3>🌳 Natura e nidi</h3><p>Il Sentiero Azzurro è ideale per presentare biodiversità, boschi, rii e vita naturale.</p></div></div></section>
 </main>
@@ -41,9 +43,17 @@ header{padding:22px 16px 18px;background:linear-gradient(135deg,#214a33,#477b55)
 <div id="map"></div><div id="status">Scegli un sentiero.</div>
 </div>
 <script>
+function toggleSchede(){
+  const box=document.getElementById('discover');
+  const btn=document.getElementById('schedeBtn');
+  const open=box.style.display==='block';
+  box.style.display=open?'none':'block';
+  btn.textContent=open?'Apri schede':'Chiudi schede';
+  if(!open) box.scrollIntoView({behavior:'smooth',block:'start'});
+}
 const TRAILS={"azzurro":{"full_count":643,"points":[[44.82047,8.106922],[44.820264,8.107352],[44.820373,8.10748],[44.820423,8.107894],[44.821461,8.109839],[44.821733,8.11107],[44.821673,8.111692],[44.820786,8.112125],[44.820651,8.112303],[44.820623,8.113488],[44.8207,8.114241],[44.821114,8.115203],[44.821652,8.116046],[44.822089,8.11778],[44.821765,8.11858],[44.82176,8.118851],[44.821653,8.118741],[44.821451,8.118948],[44.821104,8.119672],[44.820869,8.12047],[44.820601,8.120678],[44.820384,8.11969],[44.819952,8.11913],[44.819397,8.118666],[44.818414,8.115846],[44.817653,8.114932],[44.817486,8.114437],[44.817155,8.113211],[44.817144,8.112725],[44.817312,8.112213],[44.817726,8.111975],[44.817775,8.111788],[44.816988,8.1117],[44.816886,8.111491],[44.817487,8.110586],[44.817367,8.110487],[44.816592,8.110475],[44.815733,8.108783],[44.815658,8.108177],[44.815729,8.107849],[44.816061,8.107274],[44.817199,8.106408],[44.817677,8.106511],[44.81821,8.107082],[44.818445,8.107697],[44.818821,8.108114],[44.818765,8.108697],[44.819193,8.108485],[44.819615,8.108081],[44.820385,8.106975]],"simple_count":50,"km":3.54,"elev":83},"giallo":{"full_count":908,"points":[[44.820457,8.107153],[44.820499,8.106908],[44.820996,8.107265],[44.821631,8.107276],[44.821808,8.106772],[44.822616,8.106243],[44.822978,8.105603],[44.823634,8.104914],[44.824441,8.10375],[44.824765,8.103751],[44.825303,8.104063],[44.825505,8.104426],[44.825527,8.105666],[44.825454,8.106279],[44.825632,8.107256],[44.825608,8.107754],[44.825871,8.108027],[44.826248,8.108794],[44.826014,8.108944],[44.825818,8.109315],[44.825649,8.110018],[44.825638,8.110656],[44.825098,8.111568],[44.824998,8.112891],[44.824864,8.113053],[44.824438,8.11316],[44.823935,8.113464],[44.823818,8.113627],[44.823912,8.11414],[44.823887,8.114943],[44.823629,8.116934],[44.823586,8.1179],[44.823036,8.118169],[44.822206,8.117882],[44.822561,8.11847],[44.822818,8.120215],[44.823227,8.121696],[44.82323,8.12262],[44.823502,8.123765],[44.823396,8.124397],[44.823913,8.126271],[44.823944,8.12765],[44.823813,8.129022],[44.823633,8.129597],[44.823174,8.132334],[44.822892,8.132806],[44.82249,8.132524],[44.821863,8.130906],[44.821684,8.130671],[44.821397,8.130528],[44.82156,8.128447],[44.8212,8.127059],[44.820914,8.124949],[44.820493,8.11993],[44.820245,8.11944],[44.819322,8.11853],[44.818411,8.115779],[44.817589,8.114719],[44.81712,8.112978],[44.817283,8.112279],[44.817737,8.112022],[44.817784,8.111827],[44.817705,8.111705],[44.817054,8.111694],[44.816884,8.11156],[44.816985,8.111291],[44.817437,8.110729],[44.817461,8.110507],[44.817361,8.110428],[44.816626,8.11051],[44.816677,8.11039],[44.817096,8.110247],[44.818354,8.108961],[44.819045,8.108629],[44.819372,8.108339],[44.820344,8.107273],[44.820432,8.107121],[44.820425,8.106884]],"simple_count":78,"km":6.18,"elev":108}};
 const INFO={azzurro:{title:'🔵 Sentiero Azzurro – Tra i Nidi',color:'#1477c9'},giallo:{title:'🟡 Sentiero Giallo – Tra le Vigne',color:'#c99a00'}};
-let map=null,tileLayer=null,trailLayer=null,startMarker=null,endMarker=null,userMarker=null,accuracyCircle=null,watchId=null,following=false,currentTrail=null;
+let map=null,tileLayer=null,trailLayer=null,startEndLayer=null,userMarker=null,accuracyCircle=null,watchId=null,following=false,currentTrail=null;
 function initMap(){
   if(map) return;
   map=L.map('map',{preferCanvas:true,zoomControl:true}).setView([44.82,8.11],15);
@@ -63,13 +73,12 @@ function closeMap(){
 }
 function drawTrail(key){
   initMap();
-  [trailLayer,startMarker,endMarker].forEach(x=>{if(x) map.removeLayer(x);});
+  [trailLayer,startEndLayer].forEach(x=>{if(x) map.removeLayer(x);});
   const arr=TRAILS[key].points;
   trailLayer=L.polyline(arr,{color:INFO[key].color,weight:6,opacity:.98,lineJoin:'round'}).addTo(map);
-  startMarker=L.marker(arr[0]).addTo(map).bindPopup('Partenza');
-  endMarker=L.circleMarker(arr[arr.length-1],{radius:7,color:'#111',weight:2,fillColor:INFO[key].color,fillOpacity:1}).addTo(map).bindPopup('Arrivo');
+  startEndLayer=L.layerGroup([L.circleMarker(arr[0],{radius:16,color:'#111',weight:4,fillColor:INFO[key].color,fillOpacity:.25}),L.marker(arr[0],{icon:L.divIcon({className:'startEndIcon',html:'<div class="startEndPin">🏁</div><div class="startEndLabel">PARTENZA / ARRIVO</div>',iconSize:[58,76],iconAnchor:[29,58]})}).bindPopup('Partenza e arrivo: stesso punto')]).addTo(map);
   fitTrail();
-  document.getElementById('status').innerHTML='<strong>'+INFO[key].title+'</strong><br>Tracciato caricato: '+TRAILS[key].km+' km. Premi “Attiva GPS” e autorizza la posizione.';
+  document.getElementById('status').innerHTML='<strong>'+INFO[key].title+'</strong><br>Tracciato caricato: '+TRAILS[key].km+' km. La bandierina indica il punto unico di partenza e arrivo. Premi “Attiva GPS” e autorizza la posizione.';
 }
 function fitTrail(){if(trailLayer&&map) map.fitBounds(trailLayer.getBounds(),{padding:[28,28]});}
 function toggleFollow(){following=!following;document.getElementById('followBtn').textContent=following?'🎯 Sto seguendo':'🎯 Seguimi';}
