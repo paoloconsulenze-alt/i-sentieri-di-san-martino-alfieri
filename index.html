@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>I Sentieri di San Martino Alfieri - V1.4</title>
+<title>I Sentieri di San Martino Alfieri</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
@@ -28,13 +28,13 @@ header{padding:22px 16px 18px;background:linear-gradient(135deg,#214a33,#477b55)
 </head>
 <body>
 <div id="appPage">
-<header><h1>I Sentieri di San Martino Alfieri</h1><p>Tra Monferrato e Roero</p><div class="version">Versione 1.4 · tre percorsi GPS e luoghi da non perdere</div></header>
+<header><h1>I Sentieri di San Martino Alfieri</h1><p>Cammina con noi, ti offriamo bellezza!</p></header>
 <main class="container">
-<section class="card"><h2>Scegli il sentiero</h2><p>Questa versione consente di scegliere tra i tre sentieri e provare la navigazione GPS sui percorsi tracciati.</p><p class="small"><strong>Nota:</strong> seguire sempre la segnaletica reale. Il GPS può avere errori di alcuni metri.</p></section>
+<section class="card"><h2>Scegli il sentiero</h2><p>Tre cammini tra colline, vigne, natura e memoria: scegli il percorso e lasciati guidare dal paesaggio.</p><p class="small"><strong>Cammina con prudenza:</strong> segui sempre la segnaletica reale e rispetta vigne, boschi e proprietà private.</p></section>
 <section class="grid">
-<div class="card trail" style="border-left-color:var(--blu)"><h2>🔵 Sentiero Azzurro – Tra i Nidi</h2><p>Percorso breve e naturalistico, già collaudato sul campo.</p><div class="meta"><span class="badge">3,54 km</span><span class="badge">traccia alleggerita</span><span class="badge">dislivello 83 m circa</span></div><button class="btn blue" onclick="openTrail('azzurro')">Apri Tra i Nidi</button></div>
-<div class="card trail" style="border-left-color:var(--giallo)"><h2>🟡 Sentiero Giallo – Tra le Vigne</h2><p>Percorso medio tra colline, paesaggio agricolo e vigneti.</p><div class="meta"><span class="badge">6,18 km</span><span class="badge">traccia alleggerita</span><span class="badge">dislivello 108 m circa</span></div><button class="btn yellow" onclick="openTrail('giallo')">Apri Tra le Vigne</button></div>
-<div class="card trail" style="border-left-color:var(--rosso)"><h2>🔴 Percorso Alfieri</h2><p>Percorso lungo e panoramico, con forti richiami alla storia locale.</p><div class="meta"><span class="badge">11,55 km</span><span class="badge">traccia alleggerita</span><span class="badge">dislivello 124 m circa</span></div><button class="btn red" onclick="openTrail('rosso')">Apri Percorso Alfieri</button></div>
+<div class="card trail" style="border-left-color:var(--blu)"><h2>🔵 Sentiero Azzurro – Tra i Nidi</h2><p>Un cammino breve e tranquillo, tra natura, silenzi e piccoli scorci da scoprire passo dopo passo.</p><div class="meta"><span class="badge">3,54 km</span><span class="badge">breve</span><span class="badge">natura</span></div><button class="btn blue" onclick="openTrail('azzurro')">Apri Tra i Nidi</button></div>
+<div class="card trail" style="border-left-color:var(--giallo)"><h2>🟡 Sentiero Giallo – Tra le Vigne</h2><p>Un itinerario tra colline e vigneti, nel cuore del paesaggio agricolo di San Martino Alfieri.</p><div class="meta"><span class="badge">6,18 km</span><span class="badge">medio</span><span class="badge">vigne</span></div><button class="btn yellow" onclick="openTrail('giallo')">Apri Tra le Vigne</button></div>
+<div class="card trail" style="border-left-color:var(--rosso)"><h2>🔴 Percorso Alfieri</h2><p>Il percorso più ampio: panorami, frazioni, memoria storica e grandi aperture sulle colline.</p><div class="meta"><span class="badge">11,55 km</span><span class="badge">lungo</span><span class="badge">storia e panorami</span></div><button class="btn red" onclick="openTrail('rosso')">Apri Percorso Alfieri</button></div>
 </section>
 </main>
 </div>
@@ -112,7 +112,7 @@ function drawTrail(key){
   trailLayer=L.polyline(arr,{color:INFO[key].color,weight:6,opacity:.98,lineJoin:'round'}).addTo(map);
   startEndLayer=L.layerGroup([L.circleMarker(arr[0],{radius:16,color:'#111',weight:4,fillColor:INFO[key].color,fillOpacity:.25}),L.marker(arr[0],{icon:L.divIcon({className:'startEndIcon',html:'<div class="startEndPin">🏁</div><div class="startEndLabel">PARTENZA / ARRIVO</div>',iconSize:[58,76],iconAnchor:[29,58]})}).bindPopup('Partenza e arrivo: stesso punto')]).addTo(map);
   fitTrail();
-  document.getElementById('status').innerHTML='<strong>'+INFO[key].title+'</strong><br>Tracciato caricato: '+TRAILS[key].km+' km. La bandierina indica il punto unico di partenza e arrivo. Premi “Attiva GPS” e autorizza la posizione. Puoi aprire i luoghi da non perdere quando vuoi.';
+  document.getElementById('status').innerHTML='<strong>'+INFO[key].title+'</strong><br>Percorso di '+TRAILS[key].km+' km. La bandierina indica il punto unico di partenza e arrivo. Premi “Attiva GPS” e autorizza la posizione. Puoi aprire i luoghi da non perdere quando vuoi.';
 }
 function fitTrail(){if(trailLayer&&map) map.fitBounds(trailLayer.getBounds(),{padding:[28,28]});}
 function toggleFollow(){following=!following;document.getElementById('followBtn').textContent=following?'🎯 Sto seguendo':'🎯 Seguimi';}
