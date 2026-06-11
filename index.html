@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>I Sentieri di San Martino Alfieri - V1.2</title>
+<title>I Sentieri di San Martino Alfieri - V1.4</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
@@ -22,48 +22,82 @@ header{padding:22px 16px 18px;background:linear-gradient(135deg,#214a33,#477b55)
 .poi{border-left:6px solid #8aad83} .hidden{display:none!important}
 .startEndIcon{background:transparent;border:0}.startEndPin{display:flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:#fff;border:5px solid #111;box-shadow:0 3px 12px #0005;font-size:24px}.startEndLabel{white-space:nowrap;background:#111;color:#fff;border-radius:999px;padding:5px 9px;font-weight:850;font-size:12px;box-shadow:0 2px 8px #0004;margin-top:3px;transform:translateX(-23px)}
 #discover{display:none}
+#placesPanel{display:none;margin-top:8px;background:#fffaf0;border-radius:14px;padding:10px;border:1px solid #eadfca;max-height:38vh;overflow:auto}
+.place{border-left:5px solid #8aad83;background:white;border-radius:13px;padding:10px;margin:8px 0;box-shadow:0 2px 8px #0001}.place h3{font-size:1rem;margin:0 0 4px}.place p{margin:0;font-size:.92rem;line-height:1.35}
 </style>
 </head>
 <body>
 <div id="appPage">
-<header><h1>I Sentieri di San Martino Alfieri</h1><p>Tra Monferrato e Roero</p><div class="version">Versione 1.2 · partenza/arrivo e schede a richiesta</div></header>
+<header><h1>I Sentieri di San Martino Alfieri</h1><p>Tra Monferrato e Roero</p><div class="version">Versione 1.4 · tre percorsi GPS e luoghi da non perdere</div></header>
 <main class="container">
-<section class="card"><h2>Scegli il sentiero</h2><p>Questa versione serve a provare la scelta del percorso e la navigazione GPS su due sentieri già tracciati.</p><p class="small"><strong>Nota:</strong> seguire sempre la segnaletica reale. Il GPS può avere errori di alcuni metri.</p></section>
+<section class="card"><h2>Scegli il sentiero</h2><p>Questa versione consente di scegliere tra i tre sentieri e provare la navigazione GPS sui percorsi tracciati.</p><p class="small"><strong>Nota:</strong> seguire sempre la segnaletica reale. Il GPS può avere errori di alcuni metri.</p></section>
 <section class="grid">
 <div class="card trail" style="border-left-color:var(--blu)"><h2>🔵 Sentiero Azzurro – Tra i Nidi</h2><p>Percorso breve e naturalistico, già collaudato sul campo.</p><div class="meta"><span class="badge">3,54 km</span><span class="badge">traccia alleggerita</span><span class="badge">dislivello 83 m circa</span></div><button class="btn blue" onclick="openTrail('azzurro')">Apri Tra i Nidi</button></div>
 <div class="card trail" style="border-left-color:var(--giallo)"><h2>🟡 Sentiero Giallo – Tra le Vigne</h2><p>Percorso medio tra colline, paesaggio agricolo e vigneti.</p><div class="meta"><span class="badge">6,18 km</span><span class="badge">traccia alleggerita</span><span class="badge">dislivello 108 m circa</span></div><button class="btn yellow" onclick="openTrail('giallo')">Apri Tra le Vigne</button></div>
-<div class="card trail" style="border-left-color:var(--rosso)"><h2>🔴 Percorso Alfieri</h2><p>In preparazione: lo aggiungeremo dopo il rilevamento GPS.</p><button class="btn red" disabled>Prossimamente</button></div>
-<div class="card trail" style="border-left-color:var(--verde)"><h2>📖 Scopri San Martino Alfieri</h2><p>Prime schede panoramiche, agronomiche, storiche e culturali. Restano nascoste finché non vuoi leggerle.</p><button id="schedeBtn" class="btn" onclick="toggleSchede()">Apri schede</button></div>
+<div class="card trail" style="border-left-color:var(--rosso)"><h2>🔴 Percorso Alfieri</h2><p>Percorso lungo e panoramico, con forti richiami alla storia locale.</p><div class="meta"><span class="badge">11,55 km</span><span class="badge">traccia alleggerita</span><span class="badge">dislivello 124 m circa</span></div><button class="btn red" onclick="openTrail('rosso')">Apri Percorso Alfieri</button></div>
 </section>
-<section id="discover" class="card"><h2>Scopri San Martino Alfieri</h2><div class="grid"><div class="poi card"><h3>🌄 Monferrato e Roero</h3><p>San Martino Alfieri è un balcone tra paesaggi diversi: vigne, noccioleti, campi e boschi.</p></div><div class="poi card"><h3>🍇 Le vigne</h3><p>Il Sentiero Giallo racconta il lavoro vitivinicolo che ha modellato le colline e l'identità del paese.</p></div><div class="poi card"><h3>🏰 Gli Alfieri</h3><p>Il Castello e la storia degli Alfieri saranno il cuore culturale del futuro Percorso Alfieri.</p></div><div class="poi card"><h3>🌳 Natura e nidi</h3><p>Il Sentiero Azzurro è ideale per presentare biodiversità, boschi, rii e vita naturale.</p></div></div></section>
 </main>
 </div>
 <div id="mapPage">
-<div id="mapTop"><button class="btn secondary" onclick="closeMap()">← Torna alla scelta sentiero</button><h2 id="mapTitle"></h2><div id="controls"><button class="btn" onclick="activateGPS()">📍 Attiva GPS</button><button id="followBtn" class="btn secondary" onclick="toggleFollow()">🎯 Seguimi</button><button class="btn secondary" onclick="fitTrail()">🔎 Vedi percorso</button><button class="btn secondary" onclick="closeMap()">🌿 Cambia sentiero</button></div></div>
+<div id="mapTop"><button class="btn secondary" onclick="closeMap()">← Torna alla scelta sentiero</button><h2 id="mapTitle"></h2><div id="controls"><button class="btn" onclick="activateGPS()">📍 Attiva GPS</button><button id="followBtn" class="btn secondary" onclick="toggleFollow()">🎯 Seguimi</button><button class="btn secondary" onclick="fitTrail()">🔎 Vedi percorso</button><button id="placesBtn" class="btn secondary" onclick="togglePlaces()">📍 Luoghi da non perdere</button><button class="btn secondary" onclick="closeMap()">🌿 Cambia sentiero</button></div><div id="placesPanel"></div></div>
 <div id="map"></div><div id="status">Scegli un sentiero.</div>
 </div>
 <script>
-function toggleSchede(){
-  const box=document.getElementById('discover');
-  const btn=document.getElementById('schedeBtn');
-  const open=box.style.display==='block';
-  box.style.display=open?'none':'block';
-  btn.textContent=open?'Apri schede':'Chiudi schede';
-  if(!open) box.scrollIntoView({behavior:'smooth',block:'start'});
-}
-const TRAILS={"azzurro":{"full_count":643,"points":[[44.82047,8.106922],[44.820264,8.107352],[44.820373,8.10748],[44.820423,8.107894],[44.821461,8.109839],[44.821733,8.11107],[44.821673,8.111692],[44.820786,8.112125],[44.820651,8.112303],[44.820623,8.113488],[44.8207,8.114241],[44.821114,8.115203],[44.821652,8.116046],[44.822089,8.11778],[44.821765,8.11858],[44.82176,8.118851],[44.821653,8.118741],[44.821451,8.118948],[44.821104,8.119672],[44.820869,8.12047],[44.820601,8.120678],[44.820384,8.11969],[44.819952,8.11913],[44.819397,8.118666],[44.818414,8.115846],[44.817653,8.114932],[44.817486,8.114437],[44.817155,8.113211],[44.817144,8.112725],[44.817312,8.112213],[44.817726,8.111975],[44.817775,8.111788],[44.816988,8.1117],[44.816886,8.111491],[44.817487,8.110586],[44.817367,8.110487],[44.816592,8.110475],[44.815733,8.108783],[44.815658,8.108177],[44.815729,8.107849],[44.816061,8.107274],[44.817199,8.106408],[44.817677,8.106511],[44.81821,8.107082],[44.818445,8.107697],[44.818821,8.108114],[44.818765,8.108697],[44.819193,8.108485],[44.819615,8.108081],[44.820385,8.106975]],"simple_count":50,"km":3.54,"elev":83},"giallo":{"full_count":908,"points":[[44.820457,8.107153],[44.820499,8.106908],[44.820996,8.107265],[44.821631,8.107276],[44.821808,8.106772],[44.822616,8.106243],[44.822978,8.105603],[44.823634,8.104914],[44.824441,8.10375],[44.824765,8.103751],[44.825303,8.104063],[44.825505,8.104426],[44.825527,8.105666],[44.825454,8.106279],[44.825632,8.107256],[44.825608,8.107754],[44.825871,8.108027],[44.826248,8.108794],[44.826014,8.108944],[44.825818,8.109315],[44.825649,8.110018],[44.825638,8.110656],[44.825098,8.111568],[44.824998,8.112891],[44.824864,8.113053],[44.824438,8.11316],[44.823935,8.113464],[44.823818,8.113627],[44.823912,8.11414],[44.823887,8.114943],[44.823629,8.116934],[44.823586,8.1179],[44.823036,8.118169],[44.822206,8.117882],[44.822561,8.11847],[44.822818,8.120215],[44.823227,8.121696],[44.82323,8.12262],[44.823502,8.123765],[44.823396,8.124397],[44.823913,8.126271],[44.823944,8.12765],[44.823813,8.129022],[44.823633,8.129597],[44.823174,8.132334],[44.822892,8.132806],[44.82249,8.132524],[44.821863,8.130906],[44.821684,8.130671],[44.821397,8.130528],[44.82156,8.128447],[44.8212,8.127059],[44.820914,8.124949],[44.820493,8.11993],[44.820245,8.11944],[44.819322,8.11853],[44.818411,8.115779],[44.817589,8.114719],[44.81712,8.112978],[44.817283,8.112279],[44.817737,8.112022],[44.817784,8.111827],[44.817705,8.111705],[44.817054,8.111694],[44.816884,8.11156],[44.816985,8.111291],[44.817437,8.110729],[44.817461,8.110507],[44.817361,8.110428],[44.816626,8.11051],[44.816677,8.11039],[44.817096,8.110247],[44.818354,8.108961],[44.819045,8.108629],[44.819372,8.108339],[44.820344,8.107273],[44.820432,8.107121],[44.820425,8.106884]],"simple_count":78,"km":6.18,"elev":108}};
-const INFO={azzurro:{title:'🔵 Sentiero Azzurro – Tra i Nidi',color:'#1477c9'},giallo:{title:'🟡 Sentiero Giallo – Tra le Vigne',color:'#c99a00'}};
+
+const TRAILS={"azzurro":{"full_count":643,"points":[[44.82047,8.106922],[44.820264,8.107352],[44.820373,8.10748],[44.820423,8.107894],[44.821461,8.109839],[44.821733,8.11107],[44.821673,8.111692],[44.820786,8.112125],[44.820651,8.112303],[44.820623,8.113488],[44.8207,8.114241],[44.821114,8.115203],[44.821652,8.116046],[44.822089,8.11778],[44.821765,8.11858],[44.82176,8.118851],[44.821653,8.118741],[44.821451,8.118948],[44.821104,8.119672],[44.820869,8.12047],[44.820601,8.120678],[44.820384,8.11969],[44.819952,8.11913],[44.819397,8.118666],[44.818414,8.115846],[44.817653,8.114932],[44.817486,8.114437],[44.817155,8.113211],[44.817144,8.112725],[44.817312,8.112213],[44.817726,8.111975],[44.817775,8.111788],[44.816988,8.1117],[44.816886,8.111491],[44.817487,8.110586],[44.817367,8.110487],[44.816592,8.110475],[44.815733,8.108783],[44.815658,8.108177],[44.815729,8.107849],[44.816061,8.107274],[44.817199,8.106408],[44.817677,8.106511],[44.81821,8.107082],[44.818445,8.107697],[44.818821,8.108114],[44.818765,8.108697],[44.819193,8.108485],[44.819615,8.108081],[44.820385,8.106975]],"simple_count":50,"km":3.54,"elev":83},"giallo":{"full_count":908,"points":[[44.820457,8.107153],[44.820499,8.106908],[44.820996,8.107265],[44.821631,8.107276],[44.821808,8.106772],[44.822616,8.106243],[44.822978,8.105603],[44.823634,8.104914],[44.824441,8.10375],[44.824765,8.103751],[44.825303,8.104063],[44.825505,8.104426],[44.825527,8.105666],[44.825454,8.106279],[44.825632,8.107256],[44.825608,8.107754],[44.825871,8.108027],[44.826248,8.108794],[44.826014,8.108944],[44.825818,8.109315],[44.825649,8.110018],[44.825638,8.110656],[44.825098,8.111568],[44.824998,8.112891],[44.824864,8.113053],[44.824438,8.11316],[44.823935,8.113464],[44.823818,8.113627],[44.823912,8.11414],[44.823887,8.114943],[44.823629,8.116934],[44.823586,8.1179],[44.823036,8.118169],[44.822206,8.117882],[44.822561,8.11847],[44.822818,8.120215],[44.823227,8.121696],[44.82323,8.12262],[44.823502,8.123765],[44.823396,8.124397],[44.823913,8.126271],[44.823944,8.12765],[44.823813,8.129022],[44.823633,8.129597],[44.823174,8.132334],[44.822892,8.132806],[44.82249,8.132524],[44.821863,8.130906],[44.821684,8.130671],[44.821397,8.130528],[44.82156,8.128447],[44.8212,8.127059],[44.820914,8.124949],[44.820493,8.11993],[44.820245,8.11944],[44.819322,8.11853],[44.818411,8.115779],[44.817589,8.114719],[44.81712,8.112978],[44.817283,8.112279],[44.817737,8.112022],[44.817784,8.111827],[44.817705,8.111705],[44.817054,8.111694],[44.816884,8.11156],[44.816985,8.111291],[44.817437,8.110729],[44.817461,8.110507],[44.817361,8.110428],[44.816626,8.11051],[44.816677,8.11039],[44.817096,8.110247],[44.818354,8.108961],[44.819045,8.108629],[44.819372,8.108339],[44.820344,8.107273],[44.820432,8.107121],[44.820425,8.106884]],"simple_count":78,"km":6.18,"elev":108},"rosso":{"full_count":1646,"points":[[44.820145,8.107053],[44.820776,8.107031],[44.821392,8.107157],[44.821865,8.106697],[44.822453,8.10642],[44.822838,8.105752],[44.823365,8.10514],[44.823894,8.104536],[44.824363,8.103793],[44.824864,8.103805],[44.825459,8.104283],[44.825663,8.104148],[44.826139,8.104887],[44.826924,8.104997],[44.827576,8.1052],[44.828304,8.105233],[44.828925,8.104619],[44.829586,8.103879],[44.830274,8.103604],[44.830831,8.103066],[44.831583,8.102716],[44.83223,8.102396],[44.832986,8.101862],[44.833676,8.101459],[44.834417,8.10126],[44.834949,8.101765],[44.834578,8.102355],[44.834131,8.10268],[44.833826,8.103173],[44.833203,8.103678],[44.832458,8.104424],[44.831782,8.104945],[44.83106,8.10547],[44.830684,8.106177],[44.83026,8.107103],[44.82982,8.107818],[44.829218,8.108449],[44.828559,8.109251],[44.827967,8.109916],[44.827381,8.109895],[44.826862,8.109597],[44.826416,8.109021],[44.82586,8.109244],[44.825638,8.110212],[44.825425,8.111064],[44.825081,8.111922],[44.82502,8.112958],[44.824942,8.113892],[44.825057,8.114947],[44.825243,8.116087],[44.825393,8.117069],[44.825662,8.117985],[44.82575,8.118818],[44.826028,8.119849],[44.826531,8.120833],[44.826888,8.12188],[44.827174,8.12293],[44.82772,8.123573],[44.828161,8.124059],[44.828346,8.124955],[44.828698,8.125803],[44.82925,8.126371],[44.829365,8.127184],[44.829152,8.128163],[44.829084,8.129326],[44.828795,8.130296],[44.828622,8.131424],[44.828465,8.132428],[44.828064,8.133211],[44.827956,8.134104],[44.828093,8.135],[44.828358,8.135975],[44.829006,8.135761],[44.82924,8.135905],[44.828773,8.1367],[44.82814,8.137461],[44.827485,8.13717],[44.826799,8.137219],[44.826198,8.13706],[44.825452,8.136548],[44.824907,8.136012],[44.824141,8.135304],[44.82344,8.13503],[44.822816,8.134576],[44.82217,8.13397],[44.821522,8.133257],[44.821037,8.132692],[44.820246,8.132749],[44.819856,8.132051],[44.819803,8.131311],[44.819597,8.130748],[44.819534,8.129828],[44.819292,8.12923],[44.81909,8.128227],[44.819039,8.127212],[44.818962,8.126039],[44.818567,8.124981],[44.818514,8.124059],[44.818665,8.123166],[44.818678,8.122112],[44.818518,8.121115],[44.818486,8.120078],[44.81821,8.119203],[44.8179,8.118059],[44.817614,8.117033],[44.81745,8.116018],[44.817247,8.115094],[44.816582,8.114987],[44.815911,8.114328],[44.81547,8.113499],[44.815006,8.112373],[44.814341,8.111735],[44.813704,8.11137],[44.813036,8.110509],[44.812517,8.109471],[44.812148,8.108548],[44.811875,8.107613],[44.812278,8.107049],[44.812784,8.106805],[44.813284,8.106366],[44.813912,8.106318],[44.81449,8.106054],[44.815015,8.10509],[44.815533,8.104183],[44.815572,8.10357],[44.816416,8.102872],[44.817131,8.102718],[44.81779,8.102891],[44.818567,8.102841],[44.819073,8.102857],[44.818794,8.103602],[44.818629,8.104437],[44.818604,8.105353],[44.8187,8.106181],[44.818493,8.107031],[44.818392,8.107822],[44.818538,8.108042],[44.819276,8.107826],[44.819833,8.107672],[44.820378,8.107046]],"simple_count":140,"km":11.55,"elev":124}};
+const INFO={azzurro:{title:'🔵 Sentiero Azzurro – Tra i Nidi',color:'#1477c9'},giallo:{title:'🟡 Sentiero Giallo – Tra le Vigne',color:'#c99a00'},rosso:{title:'🔴 Percorso Alfieri',color:'#b7362c'}};
+const PLACES={
+  azzurro:[
+    {t:'Oasi LIPU',d:'Un luogo di natura e biodiversità: camminando con calma si entra nello spirito più silenzioso del Sentiero Azzurro.'},
+    {t:'Casa di San Giuseppe Marello',d:'Il percorso sfiora il luogo legato alla giovinezza di San Giuseppe Marello, fondatore degli Oblati di San Giuseppe.'},
+    {t:'Belvedere',d:'Uno dei punti più belli del paese: vista aperta verso il Roero e, nelle giornate limpide, fino all’arco delle Alpi.'}
+  ],
+  giallo:[
+    {t:'Collina Sansoero',d:'All’inizio del percorso si sale verso un punto da cui si osservano bene il Castello Marchesi Alfieri e il suo parco.'},
+    {t:'Chiesetta dell’Assunta',d:'Piccolo luogo di sosta e raccoglimento, con vista sui vigneti, sul castello e sul paese.'},
+    {t:'Paesaggio vitivinicolo',d:'Il Sentiero Giallo attraversa colline coltivate che raccontano il lavoro agricolo e la tradizione del vino.'}
+  ],
+  rosso:[
+    {t:'Palazzo Garibaldi',d:'Sul percorso si incontra il luogo legato a Francesca Armosino e Giuseppe Garibaldi, memoria viva della storia nazionale.'},
+    {t:'Panchina Gigante',d:'Un punto di sosta curioso e panoramico, ideale per fermarsi, respirare e guardare le colline da una prospettiva diversa.'},
+    {t:'Bricco Riondino',d:'Sfiorato dal Percorso Alfieri, offre uno degli affacci più suggestivi sul paesaggio collinare di San Martino Alfieri.'}
+  ]
+};
+
 let map=null,tileLayer=null,trailLayer=null,startEndLayer=null,userMarker=null,accuracyCircle=null,watchId=null,following=false,currentTrail=null;
 function initMap(){
   if(map) return;
   map=L.map('map',{preferCanvas:true,zoomControl:true}).setView([44.82,8.11],15);
   tileLayer=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
 }
+
+function renderPlaces(){
+  if(!currentTrail) return '';
+  const list=PLACES[currentTrail]||[];
+  return '<h3 style="margin:0 0 6px">📍 Luoghi da non perdere</h3>'+list.map(x=>'<div class="place"><h3>'+x.t+'</h3><p>'+x.d+'</p></div>').join('')+'<p class="small" style="margin:8px 0 0">L’app suggerisce dove guardare: il resto lo racconta il paesaggio.</p>';
+}
+function togglePlaces(){
+  const box=document.getElementById('placesPanel');
+  const btn=document.getElementById('placesBtn');
+  const open=box.style.display==='block';
+  if(open){closePlaces();return;}
+  box.innerHTML=renderPlaces();
+  box.style.display='block';
+  btn.textContent='📍 Chiudi luoghi';
+}
+function closePlaces(){
+  const box=document.getElementById('placesPanel');
+  const btn=document.getElementById('placesBtn');
+  if(box){box.style.display='none';box.innerHTML='';}
+  if(btn) btn.textContent='📍 Luoghi da non perdere';
+}
+
 function openTrail(key){
   currentTrail=key;
   document.getElementById('appPage').style.display='none';
   document.getElementById('mapPage').style.display='block';
   document.getElementById('mapTitle').textContent=INFO[key].title;
+  closePlaces();
   setTimeout(()=>{initMap(); drawTrail(key); map.invalidateSize();},80);
 }
 function closeMap(){
@@ -78,7 +112,7 @@ function drawTrail(key){
   trailLayer=L.polyline(arr,{color:INFO[key].color,weight:6,opacity:.98,lineJoin:'round'}).addTo(map);
   startEndLayer=L.layerGroup([L.circleMarker(arr[0],{radius:16,color:'#111',weight:4,fillColor:INFO[key].color,fillOpacity:.25}),L.marker(arr[0],{icon:L.divIcon({className:'startEndIcon',html:'<div class="startEndPin">🏁</div><div class="startEndLabel">PARTENZA / ARRIVO</div>',iconSize:[58,76],iconAnchor:[29,58]})}).bindPopup('Partenza e arrivo: stesso punto')]).addTo(map);
   fitTrail();
-  document.getElementById('status').innerHTML='<strong>'+INFO[key].title+'</strong><br>Tracciato caricato: '+TRAILS[key].km+' km. La bandierina indica il punto unico di partenza e arrivo. Premi “Attiva GPS” e autorizza la posizione.';
+  document.getElementById('status').innerHTML='<strong>'+INFO[key].title+'</strong><br>Tracciato caricato: '+TRAILS[key].km+' km. La bandierina indica il punto unico di partenza e arrivo. Premi “Attiva GPS” e autorizza la posizione. Puoi aprire i luoghi da non perdere quando vuoi.';
 }
 function fitTrail(){if(trailLayer&&map) map.fitBounds(trailLayer.getBounds(),{padding:[28,28]});}
 function toggleFollow(){following=!following;document.getElementById('followBtn').textContent=following?'🎯 Sto seguendo':'🎯 Seguimi';}
