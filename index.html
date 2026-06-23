@@ -21,8 +21,9 @@ header{padding:22px 16px 18px;background:linear-gradient(135deg,#214a33,#477b55)
 #mapPage{display:none;background:#f7ecd8;min-height:100vh;min-height:100dvh} #mapTop{background:white;padding:10px;box-shadow:0 2px 8px #0002;position:sticky;top:0;z-index:900} #mapTitle{font-size:1.05rem;margin:5px 0 8px;line-height:1.15}
 #controls{display:grid;grid-template-columns:1fr 1fr;gap:7px} #controls .btn{margin:0;padding:11px 8px;font-size:.94rem} #map{height:calc(100dvh - 210px);min-height:430px;width:100%;background:#e7eadf} #status{background:white;padding:10px 12px;font-size:.92rem;border-top:1px solid #ddd;min-height:70px}
 .startEndIcon{background:transparent;border:0}.startEndPin{display:flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:#fff;border:5px solid #111;box-shadow:0 3px 12px #0005;font-size:24px}.startEndLabel{white-space:nowrap;background:#111;color:#fff;border-radius:999px;padding:5px 9px;font-weight:850;font-size:12px;box-shadow:0 2px 8px #0004;margin-top:3px;transform:translateX(-23px)}
-#placesPanel{display:none;margin-top:8px;background:#fffaf0;border-radius:14px;padding:10px;border:1px solid #eadfca;max-height:38vh;overflow:auto}
+#placesPanel,#bioPanel{display:none;margin-top:8px;background:#fffaf0;border-radius:14px;padding:10px;border:1px solid #eadfca;max-height:38vh;overflow:auto}
 .place{border-left:5px solid #8aad83;background:white;border-radius:13px;padding:10px;margin:8px 0;box-shadow:0 2px 8px #0001}.place h3{font-size:1rem;margin:0 0 4px}.place p{margin:0;font-size:.92rem;line-height:1.35}
+.checklist{margin:8px 0 0;padding-left:0;list-style:none}.checklist li{background:white;border-radius:10px;padding:7px 9px;margin:5px 0;border-left:5px solid #6ca96c;font-size:.92rem}.bioNote{background:white;border-radius:13px;padding:10px;margin:8px 0;border-left:5px solid #4d8b4d;box-shadow:0 2px 8px #0001}
 </style>
 </head>
 <body>
@@ -39,13 +40,19 @@ header{padding:22px 16px 18px;background:linear-gradient(135deg,#214a33,#477b55)
 </main>
 </div>
 <div id="mapPage">
-<div id="mapTop"><button class="btn secondary" onclick="closeMap()">← Torna alla scelta percorso</button><h2 id="mapTitle"></h2><div id="controls"><button class="btn" onclick="activateGPS()">📍 Attiva GPS</button><button id="followBtn" class="btn secondary" onclick="toggleFollow()">🎯 Seguimi</button><button class="btn secondary" onclick="fitTrail()">🔎 Vedi percorso</button><button id="placesBtn" class="btn secondary" onclick="togglePlaces()">📍 Luoghi da non perdere</button><button class="btn secondary" onclick="closeMap()">🌿 Cambia percorso</button></div><div id="placesPanel"></div></div>
+<div id="mapTop"><button class="btn secondary" onclick="closeMap()">← Torna alla scelta percorso</button><h2 id="mapTitle"></h2><div id="controls"><button class="btn" onclick="activateGPS()">📍 Attiva GPS</button><button id="followBtn" class="btn secondary" onclick="toggleFollow()">🎯 Seguimi</button><button class="btn secondary" onclick="fitTrail()">🔎 Vedi percorso</button><button id="placesBtn" class="btn secondary" onclick="togglePlaces()">📍 Luoghi da non perdere</button><button id="bioBtn" class="btn secondary" onclick="toggleBio()">🌿 Paesaggio vivo</button><button class="btn secondary" onclick="closeMap()">🌿 Cambia percorso</button></div><div id="placesPanel"></div><div id="bioPanel"></div></div>
 <div id="map"></div><div id="status">Scegli un percorso.</div>
 </div>
 <script>
 const TRAILS={"storia":{"full_count":229,"points":[[44.82047,8.107243],[44.82046,8.107079],[44.82039,8.107018],[44.820152,8.107235],[44.819998,8.10739],[44.819831,8.107611],[44.819551,8.107795],[44.819253,8.107928],[44.819052,8.108012],[44.818862,8.108077],[44.818658,8.108131],[44.818454,8.108048],[44.818372,8.107655],[44.818347,8.107383],[44.818261,8.107101],[44.818093,8.106736],[44.81779,8.106535],[44.817507,8.106501],[44.817264,8.106672],[44.817009,8.106829],[44.816721,8.106925],[44.816457,8.106995],[44.81625,8.107023],[44.816054,8.107248],[44.815823,8.107455],[44.81564,8.107886],[44.815641,8.108299],[44.815714,8.108625],[44.815806,8.108909],[44.815937,8.109178],[44.816072,8.109461],[44.816197,8.109662],[44.81635,8.109864],[44.816529,8.110014],[44.816824,8.110085],[44.817155,8.109884],[44.81735,8.109757],[44.817578,8.109607],[44.817838,8.109371],[44.818058,8.109131],[44.817776,8.109085],[44.817936,8.109134],[44.818191,8.109161],[44.81849,8.109272],[44.818758,8.109187],[44.818952,8.10903],[44.818827,8.108851],[44.819001,8.10876],[44.819282,8.108518],[44.819519,8.108225],[44.819733,8.107951],[44.819885,8.107729],[44.820112,8.107521],[44.82029,8.107324],[44.820464,8.107006]],"simple_count":55,"km":1.6,"elev":25},"azzurro":{"full_count":643,"points":[[44.82047,8.106922],[44.820387,8.107548],[44.820662,8.108355],[44.821034,8.109099],[44.821435,8.109786],[44.821681,8.110657],[44.821692,8.11156],[44.821183,8.111935],[44.820644,8.112377],[44.82063,8.113273],[44.820691,8.114176],[44.821004,8.114982],[44.821409,8.115632],[44.821746,8.116357],[44.821948,8.117226],[44.821977,8.118077],[44.821732,8.1188],[44.821299,8.119298],[44.820978,8.12006],[44.820577,8.120624],[44.820412,8.119757],[44.819952,8.11913],[44.819397,8.118666],[44.819075,8.117876],[44.818793,8.117038],[44.818517,8.116158],[44.818138,8.115466],[44.817653,8.114932],[44.817407,8.114124],[44.817175,8.113285],[44.817222,8.11239],[44.817769,8.111926],[44.817218,8.111729],[44.816995,8.111276],[44.817484,8.110663],[44.816878,8.110523],[44.816388,8.110045],[44.816048,8.109324],[44.815699,8.108638],[44.81576,8.107788],[44.816189,8.107157],[44.816775,8.106731],[44.81734,8.106401],[44.817917,8.106732],[44.81835,8.107378],[44.818794,8.108063],[44.818858,8.108663],[44.819444,8.108252],[44.819913,8.107597],[44.820385,8.106975]],"simple_count":50,"km":3.54,"elev":83},"giallo":{"full_count":908,"points":[[44.820457,8.107153],[44.821079,8.107282],[44.821709,8.107053],[44.822164,8.106578],[44.822683,8.106124],[44.823126,8.105457],[44.823671,8.104862],[44.824082,8.104222],[44.824765,8.103751],[44.825341,8.104101],[44.825464,8.105068],[44.825452,8.106177],[44.825647,8.107526],[44.826012,8.108279],[44.826014,8.108944],[44.825691,8.109748],[44.825638,8.110656],[44.825188,8.111331],[44.825055,8.11247],[44.82465,8.113122],[44.823935,8.113464],[44.823902,8.114285],[44.82386,8.115283],[44.823702,8.116264],[44.823641,8.117478],[44.823274,8.118061],[44.822665,8.118046],[44.822339,8.118137],[44.82263,8.119057],[44.822787,8.120022],[44.823005,8.120815],[44.823228,8.122082],[44.823359,8.122984],[44.8235,8.123888],[44.823595,8.124954],[44.823786,8.125818],[44.823924,8.127036],[44.823902,8.128123],[44.823746,8.129265],[44.823529,8.130266],[44.823338,8.131279],[44.823209,8.132178],[44.822772,8.132766],[44.822317,8.132172],[44.822098,8.131424],[44.821632,8.130641],[44.82144,8.129803],[44.821556,8.128955],[44.821523,8.128159],[44.821282,8.127336],[44.821075,8.126232],[44.820967,8.125348],[44.820874,8.124516],[44.820834,8.123497],[44.820762,8.122686],[44.82067,8.121837],[44.820596,8.121021],[44.820521,8.120054],[44.820164,8.119347],[44.81949,8.11878],[44.819146,8.118052],[44.818879,8.117282],[44.818645,8.116513],[44.818127,8.11541],[44.817529,8.114452],[44.817229,8.113405],[44.817223,8.112469],[44.817757,8.111747],[44.816926,8.111617],[44.817385,8.110792],[44.817008,8.110531],[44.816976,8.110316],[44.817602,8.109742],[44.818204,8.109131],[44.81894,8.108673],[44.819455,8.108237],[44.81998,8.107694],[44.820425,8.106884]],"simple_count":78,"km":6.18,"elev":108},"rosso":{"full_count":1646,"points":[[44.820145,8.107053],[44.820776,8.107031],[44.821392,8.107157],[44.821865,8.106697],[44.822453,8.10642],[44.822838,8.105752],[44.823365,8.10514],[44.823894,8.104536],[44.824363,8.103793],[44.824864,8.103805],[44.825459,8.104283],[44.825663,8.104148],[44.826139,8.104887],[44.826924,8.104997],[44.827576,8.1052],[44.828304,8.105233],[44.828925,8.104619],[44.829586,8.103879],[44.830274,8.103604],[44.830831,8.103066],[44.831583,8.102716],[44.83223,8.102396],[44.832986,8.101862],[44.833676,8.101459],[44.834417,8.10126],[44.834949,8.101765],[44.834578,8.102355],[44.834131,8.10268],[44.833826,8.103173],[44.833203,8.103678],[44.832458,8.104424],[44.831782,8.104945],[44.83106,8.10547],[44.830684,8.106177],[44.83026,8.107103],[44.82982,8.107818],[44.829218,8.108449],[44.828559,8.109251],[44.827967,8.109916],[44.827381,8.109895],[44.826862,8.109597],[44.826416,8.109021],[44.82586,8.109244],[44.825638,8.110212],[44.825425,8.111064],[44.825081,8.111922],[44.82502,8.112958],[44.824942,8.113892],[44.825057,8.114947],[44.825243,8.116087],[44.825393,8.117069],[44.825662,8.117985],[44.82575,8.118818],[44.826028,8.119849],[44.826531,8.120833],[44.826888,8.12188],[44.827174,8.12293],[44.82772,8.123573],[44.828161,8.124059],[44.828346,8.124955],[44.828698,8.125803],[44.82925,8.126371],[44.829365,8.127184],[44.829152,8.128163],[44.829084,8.129326],[44.828795,8.130296],[44.828622,8.131424],[44.828465,8.132428],[44.828064,8.133211],[44.827956,8.134104],[44.828093,8.135],[44.828358,8.135975],[44.829006,8.135761],[44.82924,8.135905],[44.828773,8.1367],[44.82814,8.137461],[44.827485,8.13717],[44.826799,8.137219],[44.826198,8.13706],[44.825452,8.136548],[44.824907,8.136012],[44.824141,8.135304],[44.82344,8.13503],[44.822816,8.134576],[44.82217,8.13397],[44.821522,8.133257],[44.821037,8.132692],[44.820246,8.132749],[44.819856,8.132051],[44.819803,8.131311],[44.819597,8.130748],[44.819534,8.129828],[44.819292,8.12923],[44.81909,8.128227],[44.819039,8.127212],[44.818962,8.126039],[44.818567,8.124981],[44.818514,8.124059],[44.818665,8.123166],[44.818678,8.122112],[44.818518,8.121115],[44.818486,8.120078],[44.81821,8.119203],[44.8179,8.118059],[44.817614,8.117033],[44.81745,8.116018],[44.817247,8.115094],[44.816582,8.114987],[44.815911,8.114328],[44.81547,8.113499],[44.815006,8.112373],[44.814341,8.111735],[44.813704,8.11137],[44.813036,8.110509],[44.812517,8.109471],[44.812148,8.108548],[44.811875,8.107613],[44.812278,8.107049],[44.812784,8.106805],[44.813284,8.106366],[44.813912,8.106318],[44.81449,8.106054],[44.815015,8.10509],[44.815533,8.104183],[44.815572,8.10357],[44.816416,8.102872],[44.817131,8.102718],[44.81779,8.102891],[44.818567,8.102841],[44.819073,8.102857],[44.818794,8.103602],[44.818629,8.104437],[44.818604,8.105353],[44.8187,8.106181],[44.818493,8.107031],[44.818392,8.107822],[44.818538,8.108042],[44.819276,8.107826],[44.819833,8.107672],[44.820378,8.107046]],"simple_count":140,"km":11.55,"elev":124}};
 const INFO={"storia":{"title":"⚪ San Martino è nella Storia!","color":"#6f6f6f"},"azzurro":{"title":"🔵 Sentiero Azzurro – Tra i Nidi","color":"#1477c9"},"giallo":{"title":"🟡 Sentiero Giallo – Tra le Vigne","color":"#c99a00"},"rosso":{"title":"🔴 Percorso Alfieri","color":"#b7362c"}};
 const PLACES={"storia":[{"t":"Bacheche storiche","d":"Fermati qualche minuto e scopri i personaggi che hanno incrociato la storia di San Martino Alfieri."},{"t":"Casa di San Giuseppe Marello","d":"Qui trascorse parte della sua giovinezza il futuro santo fondatore degli Oblati di San Giuseppe."},{"t":"Castello Marchesi Alfieri","d":"Il simbolo di San Martino Alfieri e della famiglia che ha segnato la storia del paese."},{"t":"Chiesa Parrocchiale","d":"Da secoli è il cuore religioso e comunitario di San Martino Alfieri."},{"t":"Statua di San Giuseppe Marello","d":"Un invito a ricordare uno dei figli più illustri legati a questo territorio."},{"t":"Belvedere","d":"Guardati intorno: Roero, Monferrato e, nelle giornate limpide, le Alpi."}],"azzurro":[{"t":"Oasi LIPU","d":"Un luogo di natura e biodiversità: camminando con calma si entra nello spirito più silenzioso del Sentiero Azzurro."},{"t":"Casa di San Giuseppe Marello","d":"Il percorso sfiora il luogo legato alla giovinezza di San Giuseppe Marello, fondatore degli Oblati di San Giuseppe."},{"t":"Belvedere","d":"Uno dei punti più belli del paese: vista aperta verso il Roero e, nelle giornate limpide, fino all’arco delle Alpi."}],"giallo":[{"t":"Collina Sansoero","d":"All’inizio del percorso si sale verso un punto da cui si osservano bene il Castello Marchesi Alfieri e il suo parco."},{"t":"Chiesetta dell’Assunta","d":"Piccolo luogo di sosta e raccoglimento, con vista sui vigneti, sul castello e sul paese."},{"t":"Paesaggio vitivinicolo","d":"Il Sentiero Giallo attraversa colline coltivate che raccontano il lavoro agricolo e la tradizione del vino."}],"rosso":[{"t":"Palazzo Garibaldi","d":"Sul percorso si incontra il luogo legato a Francesca Armosino e Giuseppe Garibaldi, memoria viva della storia nazionale."},{"t":"Panchina Gigante","d":"Un punto di sosta curioso e panoramico, ideale per fermarsi, respirare e guardare le colline da una prospettiva diversa."},{"t":"Bricco Riondino","d":"Sfiorato dal Percorso Alfieri, offre uno degli affacci più suggestivi sul paesaggio collinare di San Martino Alfieri."}]};
+const BIO_NOTES={
+"storia":"Anche la biodiversità ha una storia: il paesaggio che vedi è il risultato di secoli di relazioni tra uomo e natura.",
+"azzurro":"Riesci a distinguere almeno tre canti diversi di uccelli?",
+"giallo":"Osserva i margini dei campi: la vita spesso si nasconde ai bordi.",
+"rosso":"Guarda quante volte cambia il paesaggio durante il cammino."
+};
 let map=null,tileLayer=null,trailLayer=null,startEndLayer=null,userMarker=null,accuracyCircle=null,watchId=null,following=false,currentTrail=null;
 function initMap(){
   if(map) return;
@@ -63,6 +70,7 @@ function togglePlaces(){
   const btn=document.getElementById('placesBtn');
   const open=box.style.display==='block';
   if(open){closePlaces();return;}
+  closeBio();
   box.innerHTML=renderPlaces();
   box.style.display='block';
   btn.textContent='📍 Chiudi luoghi';
@@ -74,12 +82,40 @@ function closePlaces(){
   box.innerHTML='';
   btn.textContent='📍 Luoghi da non perdere';
 }
+function renderBio(){
+  const note=BIO_NOTES[currentTrail]||"Guarda con attenzione: ogni ambiente racconta una forma diversa di vita.";
+  return '<h3 style="margin:0 0 6px">🌿 Quanto è vivo questo paesaggio?</h3>'+
+    '<div class="bioNote"><p><strong>La biodiversità è la ricchezza della vita.</strong></p><p>Un territorio non è fatto solo di persone, case e vigneti. È una rete di relazioni tra piante, animali, insetti, acqua e suolo.</p></div>'+
+    '<div class="bioNote"><p><strong>Durante il cammino prova a cercare:</strong></p><ul class="checklist">'+
+    '<li>☐ un uccello</li><li>☐ una farfalla o un altro insetto</li><li>☐ una pianta selvatica</li><li>☐ una siepe</li><li>☐ un albero diverso dagli altri</li><li>☐ una traccia della presenza dell’acqua</li>'+
+    '</ul></div>'+
+    '<div class="bioNote"><p>'+escapeHtml(note)+'</p><p><strong>Se riesci a trovarne almeno quattro, stai camminando in un ambiente ricco di vita.</strong></p></div>';
+}
+function toggleBio(){
+  const box=document.getElementById('bioPanel');
+  const btn=document.getElementById('bioBtn');
+  const open=box.style.display==='block';
+  if(open){closeBio();return;}
+  closePlaces();
+  box.innerHTML=renderBio();
+  box.style.display='block';
+  btn.textContent='🌿 Chiudi paesaggio';
+}
+function closeBio(){
+  const box=document.getElementById('bioPanel');
+  const btn=document.getElementById('bioBtn');
+  if(!box||!btn) return;
+  box.style.display='none';
+  box.innerHTML='';
+  btn.textContent='🌿 Paesaggio vivo';
+}
 function openTrail(key){
   currentTrail=key;
   document.getElementById('appPage').style.display='none';
   document.getElementById('mapPage').style.display='block';
   document.getElementById('mapTitle').textContent=INFO[key].title;
   closePlaces();
+  closeBio();
   setTimeout(()=>{initMap(); drawTrail(key); map.invalidateSize();},80);
 }
 function closeMap(){
@@ -87,6 +123,7 @@ function closeMap(){
   document.getElementById('appPage').style.display='block';
   following=false; document.getElementById('followBtn').textContent='🎯 Seguimi';
   closePlaces();
+  closeBio();
 }
 function drawTrail(key){
   initMap();
@@ -95,7 +132,7 @@ function drawTrail(key){
   trailLayer=L.polyline(arr,{color:INFO[key].color,weight:6,opacity:.98,lineJoin:'round'}).addTo(map);
   startEndLayer=L.layerGroup([L.circleMarker(arr[0],{radius:16,color:'#111',weight:4,fillColor:INFO[key].color,fillOpacity:.25}),L.marker(arr[0],{icon:L.divIcon({className:'startEndIcon',html:'<div class="startEndPin">🏁</div><div class="startEndLabel">PARTENZA / ARRIVO</div>',iconSize:[58,76],iconAnchor:[29,58]})}).bindPopup('Partenza e arrivo: stesso punto')]).addTo(map);
   fitTrail();
-  document.getElementById('status').innerHTML='<strong>'+INFO[key].title+'</strong><br>Percorso di '+TRAILS[key].km.toFixed(2).replace('.',',')+' km. La bandierina indica il punto unico di partenza e arrivo. Premi “Attiva GPS” e autorizza la posizione. Puoi aprire i luoghi da non perdere quando vuoi.';
+  document.getElementById('status').innerHTML='<strong>'+INFO[key].title+'</strong><br>Percorso di '+TRAILS[key].km.toFixed(2).replace('.',',')+' km. La bandierina indica il punto unico di partenza e arrivo. Premi “Attiva GPS” e autorizza la posizione. Puoi aprire i luoghi da non perdere e il paesaggio vivo quando vuoi.';
 }
 function fitTrail(){if(trailLayer&&map) map.fitBounds(trailLayer.getBounds(),{padding:[28,28]});}
 function toggleFollow(){following=!following;document.getElementById('followBtn').textContent=following?'🎯 Sto seguendo':'🎯 Seguimi';}
