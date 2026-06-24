@@ -12,7 +12,7 @@
 <style>
 :root{--verde:#244c34;--crema:#fff8ec;--blu:#1477c9;--giallo:#c99a00;--rosso:#b7362c;--storia:#6f6f6f;--testo:#18231c}
 *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--crema);color:var(--testo)}
-header{padding:22px 16px 18px;background:linear-gradient(135deg,#214a33,#477b55);color:white} header h1{margin:0;font-size:1.55rem;line-height:1.1} header p{margin:7px 0 0;opacity:.95}
+header{padding:22px 16px 18px;background:linear-gradient(135deg,#214a33,#477b55);color:white} header h1{margin:0;font-size:1.55rem;line-height:1.1} header p{margin:7px 0 0;opacity:.95}.langBar{display:flex;gap:7px;justify-content:flex-end;margin-bottom:10px}.langBtn{border:1px solid #ffffffaa;background:#ffffff22;color:white;border-radius:999px;padding:6px 10px;font-weight:800;cursor:pointer}.langBtn.active{background:white;color:var(--verde)}
 .container{padding:14px;max-width:980px;margin:auto} .card{background:white;border-radius:20px;padding:16px;margin:0 0 14px;box-shadow:0 4px 16px #0002} .small{font-size:.92rem;color:#536153} h2{margin:.1rem 0 .5rem} h3{margin:.1rem 0 .35rem}
 .grid{display:grid;grid-template-columns:1fr;gap:12px} @media(min-width:760px){.grid{grid-template-columns:1fr 1fr}}
 .trail{border-left:8px solid #aaa} .meta{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0} .badge{background:#f1f4ef;padding:6px 9px;border-radius:999px;font-size:.9rem}
@@ -22,38 +22,210 @@ header{padding:22px 16px 18px;background:linear-gradient(135deg,#214a33,#477b55)
 #controls{display:grid;grid-template-columns:1fr 1fr;gap:7px} #controls .btn{margin:0;padding:11px 8px;font-size:.94rem} #map{height:calc(100dvh - 210px);min-height:430px;width:100%;background:#e7eadf} #status{background:white;padding:10px 12px;font-size:.92rem;border-top:1px solid #ddd;min-height:70px}
 .startEndIcon{background:transparent;border:0}.startEndPin{display:flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:#fff;border:5px solid #111;box-shadow:0 3px 12px #0005;font-size:24px}.startEndLabel{white-space:nowrap;background:#111;color:#fff;border-radius:999px;padding:5px 9px;font-weight:850;font-size:12px;box-shadow:0 2px 8px #0004;margin-top:3px;transform:translateX(-23px)}
 #placesPanel,#bioPanel{display:none;margin-top:8px;background:#fffaf0;border-radius:14px;padding:10px;border:1px solid #eadfca;max-height:38vh;overflow:auto}
-.place{border-left:5px solid #8aad83;background:white;border-radius:13px;padding:10px;margin:8px 0;box-shadow:0 2px 8px #0001}.place h3{font-size:1rem;margin:0 0 4px}.place p{margin:0;font-size:.92rem;line-height:1.35}
-.checklist{margin:8px 0 0;padding-left:0;list-style:none}.checklist li{background:white;border-radius:10px;padding:7px 9px;margin:5px 0;border-left:5px solid #6ca96c;font-size:.92rem}.bioNote{background:white;border-radius:13px;padding:10px;margin:8px 0;border-left:5px solid #4d8b4d;box-shadow:0 2px 8px #0001}
+.place,.bioBox{border-left:5px solid #8aad83;background:white;border-radius:13px;padding:10px;margin:8px 0;box-shadow:0 2px 8px #0001}.place h3,.bioBox h3{font-size:1rem;margin:0 0 4px}.place p,.bioBox p{margin:0 0 8px;font-size:.92rem;line-height:1.35}.bioList{margin:8px 0 0;padding-left:0;list-style:none}.bioList li{margin:4px 0;font-size:.94rem}
 </style>
 </head>
 <body>
 <div id="appPage">
-<header><h1>I Sentieri di San Martino Alfieri</h1><p>Cammina con noi, ti offriamo bellezza!</p></header>
+<header><div class="langBar"><button id="itBtn" class="langBtn active" onclick="setLang('it')">IT</button><button id="enBtn" class="langBtn" onclick="setLang('en')">EN</button><button id="deBtn" class="langBtn" onclick="setLang('de')">DE</button></div><h1 id="appTitle">I Sentieri di San Martino Alfieri</h1><p id="appSubtitle">Cammina con noi, ti offriamo bellezza!</p></header>
 <main class="container">
-<section class="card"><h2>Scegli il percorso</h2><p><strong>Tre semplici passi:</strong><br>Scegli il percorso, attiva il GPS, premi &quot;Seguimi&quot;... e poi via!</p><p><strong>Lasciati guidare dal paesaggio.</strong></p><p class="small"><strong>Cammina con prudenza:</strong> segui sempre la segnaletica reale e rispetta vigne, boschi e proprietà private.</p><p class="small"><strong>Prima di partire:</strong> usa abbigliamento e scarpe adeguate. Presta attenzione ai tratti sterrati: possono essere fangosi, allagati o sdrucciolevoli.</p></section>
+<section class="card"><h2 id="chooseTitle">Scegli il percorso</h2><p id="introSteps"><strong>Tre semplici passi:</strong><br>Scegli il percorso, attiva il GPS, premi &quot;Seguimi&quot;... e poi via!</p><p id="introLandscape"><strong>Lasciati guidare dal paesaggio.</strong></p><p id="introPrudence" class="small"><strong>Cammina con prudenza:</strong> segui sempre la segnaletica reale e rispetta vigne, boschi e proprietà private.</p><p id="introShoes" class="small"><strong>Prima di partire:</strong> usa abbigliamento e scarpe adeguate. Presta attenzione ai tratti sterrati: possono essere fangosi, allagati o sdrucciolevoli.</p></section>
 <section class="grid">
-<div class="card trail" style="border-left-color:var(--storia)"><h2>⚪ San Martino è nella Storia!</h2><p>Un breve cammino tra luoghi, personaggi e memoria del paese.</p><div class="meta"><span class="badge">1,60 km</span><span class="badge">breve</span><span class="badge">storia</span></div><button class="btn storia" onclick="openTrail('storia')">Apri San Martino è nella Storia!</button></div>
-<div class="card trail" style="border-left-color:var(--blu)"><h2>🔵 Sentiero Azzurro – Tra i Nidi</h2><p>Un cammino breve e tranquillo, tra natura, silenzi e piccoli scorci da scoprire passo dopo passo.</p><div class="meta"><span class="badge">3,54 km</span><span class="badge">breve</span><span class="badge">natura</span></div><button class="btn azzurro" onclick="openTrail('azzurro')">Apri Tra i Nidi</button></div>
-<div class="card trail" style="border-left-color:var(--giallo)"><h2>🟡 Sentiero Giallo – Tra le Vigne</h2><p>Un itinerario tra colline e vigneti, nel cuore del paesaggio agricolo di San Martino Alfieri.</p><div class="meta"><span class="badge">6,18 km</span><span class="badge">medio</span><span class="badge">vigne</span></div><button class="btn giallo" onclick="openTrail('giallo')">Apri Tra le Vigne</button></div>
-<div class="card trail" style="border-left-color:var(--rosso)"><h2>🔴 Percorso Alfieri</h2><p>Il percorso più ampio: panorami, frazioni, memoria storica e grandi aperture sulle colline.</p><div class="meta"><span class="badge">11,55 km</span><span class="badge">lungo</span><span class="badge">storia e panorami</span></div><button class="btn rosso" onclick="openTrail('rosso')">Apri Percorso Alfieri</button></div>
+<div class="card trail" style="border-left-color:var(--storia)"><h2>⚪ San Martino è nella Storia!</h2><p id="descStoria">Un breve cammino tra luoghi, personaggi e memoria del paese.</p><div class="meta"><span class="badge">1,60 km</span><span class="badge">breve</span><span class="badge">storia</span></div><button id="btnStoria" class="btn storia" onclick="openTrail('storia')">Apri San Martino è nella Storia!</button></div>
+<div class="card trail" style="border-left-color:var(--blu)"><h2>🔵 Sentiero Azzurro – Tra i Nidi</h2><p id="descAzzurro">Un cammino breve e tranquillo, tra natura, silenzi e piccoli scorci da scoprire passo dopo passo.</p><div class="meta"><span class="badge">3,54 km</span><span class="badge">breve</span><span class="badge">natura</span></div><button id="btnAzzurro" class="btn azzurro" onclick="openTrail('azzurro')">Apri Tra i Nidi</button></div>
+<div class="card trail" style="border-left-color:var(--giallo)"><h2>🟡 Sentiero Giallo – Tra le Vigne</h2><p id="descGiallo">Un itinerario tra colline e vigneti, nel cuore del paesaggio agricolo di San Martino Alfieri.</p><div class="meta"><span class="badge">6,18 km</span><span class="badge">medio</span><span class="badge">vigne</span></div><button id="btnGiallo" class="btn giallo" onclick="openTrail('giallo')">Apri Tra le Vigne</button></div>
+<div class="card trail" style="border-left-color:var(--rosso)"><h2>🔴 Percorso Alfieri</h2><p id="descRosso">Il percorso più ampio: panorami, frazioni, memoria storica e grandi aperture sulle colline.</p><div class="meta"><span class="badge">11,55 km</span><span class="badge">lungo</span><span class="badge">storia e panorami</span></div><button id="btnRosso" class="btn rosso" onclick="openTrail('rosso')">Apri Percorso Alfieri</button></div>
 </section>
 </main>
 </div>
 <div id="mapPage">
-<div id="mapTop"><button class="btn secondary" onclick="closeMap()">← Torna alla scelta percorso</button><h2 id="mapTitle"></h2><div id="controls"><button class="btn" onclick="activateGPS()">📍 Attiva GPS</button><button id="followBtn" class="btn secondary" onclick="toggleFollow()">🎯 Seguimi</button><button class="btn secondary" onclick="fitTrail()">🔎 Vedi percorso</button><button id="placesBtn" class="btn secondary" onclick="togglePlaces()">📍 Luoghi da non perdere</button><button id="bioBtn" class="btn secondary" onclick="toggleBio()">🌿 Paesaggio vivo</button><button class="btn secondary" onclick="closeMap()">🌿 Cambia percorso</button></div><div id="placesPanel"></div><div id="bioPanel"></div></div>
+<div id="mapTop"><button id="backBtn" class="btn secondary" onclick="closeMap()">← Torna alla scelta percorso</button><h2 id="mapTitle"></h2><div id="controls"><button id="gpsBtn" class="btn" onclick="activateGPS()">📍 Attiva GPS</button><button id="followBtn" class="btn secondary" onclick="toggleFollow()">🎯 Seguimi</button><button id="fitBtn" class="btn secondary" onclick="fitTrail()">🔎 Vedi percorso</button><button id="placesBtn" class="btn secondary" onclick="togglePlaces()">📍 Luoghi da non perdere</button><button id="bioBtn" class="btn secondary" onclick="toggleBio()">🌿 Quanto è vivo?</button><button id="changeBtn" class="btn secondary" onclick="closeMap()">🌿 Cambia percorso</button></div><div id="placesPanel"></div><div id="bioPanel"></div></div>
 <div id="map"></div><div id="status">Scegli un percorso.</div>
 </div>
 <script>
 const TRAILS={"storia":{"full_count":229,"points":[[44.82047,8.107243],[44.82046,8.107079],[44.82039,8.107018],[44.820152,8.107235],[44.819998,8.10739],[44.819831,8.107611],[44.819551,8.107795],[44.819253,8.107928],[44.819052,8.108012],[44.818862,8.108077],[44.818658,8.108131],[44.818454,8.108048],[44.818372,8.107655],[44.818347,8.107383],[44.818261,8.107101],[44.818093,8.106736],[44.81779,8.106535],[44.817507,8.106501],[44.817264,8.106672],[44.817009,8.106829],[44.816721,8.106925],[44.816457,8.106995],[44.81625,8.107023],[44.816054,8.107248],[44.815823,8.107455],[44.81564,8.107886],[44.815641,8.108299],[44.815714,8.108625],[44.815806,8.108909],[44.815937,8.109178],[44.816072,8.109461],[44.816197,8.109662],[44.81635,8.109864],[44.816529,8.110014],[44.816824,8.110085],[44.817155,8.109884],[44.81735,8.109757],[44.817578,8.109607],[44.817838,8.109371],[44.818058,8.109131],[44.817776,8.109085],[44.817936,8.109134],[44.818191,8.109161],[44.81849,8.109272],[44.818758,8.109187],[44.818952,8.10903],[44.818827,8.108851],[44.819001,8.10876],[44.819282,8.108518],[44.819519,8.108225],[44.819733,8.107951],[44.819885,8.107729],[44.820112,8.107521],[44.82029,8.107324],[44.820464,8.107006]],"simple_count":55,"km":1.6,"elev":25},"azzurro":{"full_count":643,"points":[[44.82047,8.106922],[44.820387,8.107548],[44.820662,8.108355],[44.821034,8.109099],[44.821435,8.109786],[44.821681,8.110657],[44.821692,8.11156],[44.821183,8.111935],[44.820644,8.112377],[44.82063,8.113273],[44.820691,8.114176],[44.821004,8.114982],[44.821409,8.115632],[44.821746,8.116357],[44.821948,8.117226],[44.821977,8.118077],[44.821732,8.1188],[44.821299,8.119298],[44.820978,8.12006],[44.820577,8.120624],[44.820412,8.119757],[44.819952,8.11913],[44.819397,8.118666],[44.819075,8.117876],[44.818793,8.117038],[44.818517,8.116158],[44.818138,8.115466],[44.817653,8.114932],[44.817407,8.114124],[44.817175,8.113285],[44.817222,8.11239],[44.817769,8.111926],[44.817218,8.111729],[44.816995,8.111276],[44.817484,8.110663],[44.816878,8.110523],[44.816388,8.110045],[44.816048,8.109324],[44.815699,8.108638],[44.81576,8.107788],[44.816189,8.107157],[44.816775,8.106731],[44.81734,8.106401],[44.817917,8.106732],[44.81835,8.107378],[44.818794,8.108063],[44.818858,8.108663],[44.819444,8.108252],[44.819913,8.107597],[44.820385,8.106975]],"simple_count":50,"km":3.54,"elev":83},"giallo":{"full_count":908,"points":[[44.820457,8.107153],[44.821079,8.107282],[44.821709,8.107053],[44.822164,8.106578],[44.822683,8.106124],[44.823126,8.105457],[44.823671,8.104862],[44.824082,8.104222],[44.824765,8.103751],[44.825341,8.104101],[44.825464,8.105068],[44.825452,8.106177],[44.825647,8.107526],[44.826012,8.108279],[44.826014,8.108944],[44.825691,8.109748],[44.825638,8.110656],[44.825188,8.111331],[44.825055,8.11247],[44.82465,8.113122],[44.823935,8.113464],[44.823902,8.114285],[44.82386,8.115283],[44.823702,8.116264],[44.823641,8.117478],[44.823274,8.118061],[44.822665,8.118046],[44.822339,8.118137],[44.82263,8.119057],[44.822787,8.120022],[44.823005,8.120815],[44.823228,8.122082],[44.823359,8.122984],[44.8235,8.123888],[44.823595,8.124954],[44.823786,8.125818],[44.823924,8.127036],[44.823902,8.128123],[44.823746,8.129265],[44.823529,8.130266],[44.823338,8.131279],[44.823209,8.132178],[44.822772,8.132766],[44.822317,8.132172],[44.822098,8.131424],[44.821632,8.130641],[44.82144,8.129803],[44.821556,8.128955],[44.821523,8.128159],[44.821282,8.127336],[44.821075,8.126232],[44.820967,8.125348],[44.820874,8.124516],[44.820834,8.123497],[44.820762,8.122686],[44.82067,8.121837],[44.820596,8.121021],[44.820521,8.120054],[44.820164,8.119347],[44.81949,8.11878],[44.819146,8.118052],[44.818879,8.117282],[44.818645,8.116513],[44.818127,8.11541],[44.817529,8.114452],[44.817229,8.113405],[44.817223,8.112469],[44.817757,8.111747],[44.816926,8.111617],[44.817385,8.110792],[44.817008,8.110531],[44.816976,8.110316],[44.817602,8.109742],[44.818204,8.109131],[44.81894,8.108673],[44.819455,8.108237],[44.81998,8.107694],[44.820425,8.106884]],"simple_count":78,"km":6.18,"elev":108},"rosso":{"full_count":1646,"points":[[44.820145,8.107053],[44.820776,8.107031],[44.821392,8.107157],[44.821865,8.106697],[44.822453,8.10642],[44.822838,8.105752],[44.823365,8.10514],[44.823894,8.104536],[44.824363,8.103793],[44.824864,8.103805],[44.825459,8.104283],[44.825663,8.104148],[44.826139,8.104887],[44.826924,8.104997],[44.827576,8.1052],[44.828304,8.105233],[44.828925,8.104619],[44.829586,8.103879],[44.830274,8.103604],[44.830831,8.103066],[44.831583,8.102716],[44.83223,8.102396],[44.832986,8.101862],[44.833676,8.101459],[44.834417,8.10126],[44.834949,8.101765],[44.834578,8.102355],[44.834131,8.10268],[44.833826,8.103173],[44.833203,8.103678],[44.832458,8.104424],[44.831782,8.104945],[44.83106,8.10547],[44.830684,8.106177],[44.83026,8.107103],[44.82982,8.107818],[44.829218,8.108449],[44.828559,8.109251],[44.827967,8.109916],[44.827381,8.109895],[44.826862,8.109597],[44.826416,8.109021],[44.82586,8.109244],[44.825638,8.110212],[44.825425,8.111064],[44.825081,8.111922],[44.82502,8.112958],[44.824942,8.113892],[44.825057,8.114947],[44.825243,8.116087],[44.825393,8.117069],[44.825662,8.117985],[44.82575,8.118818],[44.826028,8.119849],[44.826531,8.120833],[44.826888,8.12188],[44.827174,8.12293],[44.82772,8.123573],[44.828161,8.124059],[44.828346,8.124955],[44.828698,8.125803],[44.82925,8.126371],[44.829365,8.127184],[44.829152,8.128163],[44.829084,8.129326],[44.828795,8.130296],[44.828622,8.131424],[44.828465,8.132428],[44.828064,8.133211],[44.827956,8.134104],[44.828093,8.135],[44.828358,8.135975],[44.829006,8.135761],[44.82924,8.135905],[44.828773,8.1367],[44.82814,8.137461],[44.827485,8.13717],[44.826799,8.137219],[44.826198,8.13706],[44.825452,8.136548],[44.824907,8.136012],[44.824141,8.135304],[44.82344,8.13503],[44.822816,8.134576],[44.82217,8.13397],[44.821522,8.133257],[44.821037,8.132692],[44.820246,8.132749],[44.819856,8.132051],[44.819803,8.131311],[44.819597,8.130748],[44.819534,8.129828],[44.819292,8.12923],[44.81909,8.128227],[44.819039,8.127212],[44.818962,8.126039],[44.818567,8.124981],[44.818514,8.124059],[44.818665,8.123166],[44.818678,8.122112],[44.818518,8.121115],[44.818486,8.120078],[44.81821,8.119203],[44.8179,8.118059],[44.817614,8.117033],[44.81745,8.116018],[44.817247,8.115094],[44.816582,8.114987],[44.815911,8.114328],[44.81547,8.113499],[44.815006,8.112373],[44.814341,8.111735],[44.813704,8.11137],[44.813036,8.110509],[44.812517,8.109471],[44.812148,8.108548],[44.811875,8.107613],[44.812278,8.107049],[44.812784,8.106805],[44.813284,8.106366],[44.813912,8.106318],[44.81449,8.106054],[44.815015,8.10509],[44.815533,8.104183],[44.815572,8.10357],[44.816416,8.102872],[44.817131,8.102718],[44.81779,8.102891],[44.818567,8.102841],[44.819073,8.102857],[44.818794,8.103602],[44.818629,8.104437],[44.818604,8.105353],[44.8187,8.106181],[44.818493,8.107031],[44.818392,8.107822],[44.818538,8.108042],[44.819276,8.107826],[44.819833,8.107672],[44.820378,8.107046]],"simple_count":140,"km":11.55,"elev":124}};
 const INFO={"storia":{"title":"⚪ San Martino è nella Storia!","color":"#6f6f6f"},"azzurro":{"title":"🔵 Sentiero Azzurro – Tra i Nidi","color":"#1477c9"},"giallo":{"title":"🟡 Sentiero Giallo – Tra le Vigne","color":"#c99a00"},"rosso":{"title":"🔴 Percorso Alfieri","color":"#b7362c"}};
-const PLACES={"storia":[{"t":"Bacheche storiche","d":"Fermati qualche minuto e scopri i personaggi che hanno incrociato la storia di San Martino Alfieri."},{"t":"Casa di San Giuseppe Marello","d":"Qui trascorse parte della sua giovinezza il futuro santo fondatore degli Oblati di San Giuseppe."},{"t":"Castello Marchesi Alfieri","d":"Il simbolo di San Martino Alfieri e della famiglia che ha segnato la storia del paese."},{"t":"Chiesa Parrocchiale","d":"Da secoli è il cuore religioso e comunitario di San Martino Alfieri."},{"t":"Statua di San Giuseppe Marello","d":"Un invito a ricordare uno dei figli più illustri legati a questo territorio."},{"t":"Belvedere","d":"Guardati intorno: Roero, Monferrato e, nelle giornate limpide, le Alpi."}],"azzurro":[{"t":"Oasi LIPU","d":"Un luogo di natura e biodiversità: camminando con calma si entra nello spirito più silenzioso del Sentiero Azzurro."},{"t":"Casa di San Giuseppe Marello","d":"Il percorso sfiora il luogo legato alla giovinezza di San Giuseppe Marello, fondatore degli Oblati di San Giuseppe."},{"t":"Belvedere","d":"Uno dei punti più belli del paese: vista aperta verso il Roero e, nelle giornate limpide, fino all’arco delle Alpi."}],"giallo":[{"t":"Collina Sansoero","d":"All’inizio del percorso si sale verso un punto da cui si osservano bene il Castello Marchesi Alfieri e il suo parco."},{"t":"Chiesetta dell’Assunta","d":"Piccolo luogo di sosta e raccoglimento, con vista sui vigneti, sul castello e sul paese."},{"t":"Paesaggio vitivinicolo","d":"Il Sentiero Giallo attraversa colline coltivate che raccontano il lavoro agricolo e la tradizione del vino."}],"rosso":[{"t":"Palazzo Garibaldi","d":"Sul percorso si incontra il luogo legato a Francesca Armosino e Giuseppe Garibaldi, memoria viva della storia nazionale."},{"t":"Panchina Gigante","d":"Un punto di sosta curioso e panoramico, ideale per fermarsi, respirare e guardare le colline da una prospettiva diversa."},{"t":"Bricco Riondino","d":"Sfiorato dal Percorso Alfieri, offre uno degli affacci più suggestivi sul paesaggio collinare di San Martino Alfieri."}]};
-const BIO_NOTES={
-"storia":"Anche la biodiversità ha una storia: il paesaggio che vedi è il risultato di secoli di relazioni tra uomo e natura.",
+let currentLang='it';
+const UI_TEXT={
+  it:{
+    subtitle:'Cammina con noi, ti offriamo bellezza!',
+    chooseTitle:'Scegli il percorso',
+    introSteps:'<strong>Tre semplici passi:</strong><br>Scegli il percorso, attiva il GPS, premi &quot;Seguimi&quot;... e poi via!',
+    introLandscape:'<strong>Lasciati guidare dal paesaggio.</strong>',
+    introPrudence:'<strong>Cammina con prudenza:</strong> segui sempre la segnaletica reale e rispetta vigne, boschi e proprietà private.',
+    introShoes:'<strong>Prima di partire:</strong> usa abbigliamento e scarpe adeguate. Presta attenzione ai tratti sterrati: possono essere fangosi, allagati o sdrucciolevoli.',
+    descStoria:'Un breve cammino tra luoghi, personaggi e memoria del paese.',
+    descAzzurro:'Un cammino breve e tranquillo, tra natura, silenzi e piccoli scorci da scoprire passo dopo passo.',
+    descGiallo:'Un itinerario tra colline e vigneti, nel cuore del paesaggio agricolo di San Martino Alfieri.',
+    descRosso:'Il percorso più ampio: panorami, frazioni, memoria storica e grandi aperture sulle colline.',
+    btnStoria:'Apri San Martino è nella Storia!',
+    btnAzzurro:'Apri Tra i Nidi',
+    btnGiallo:'Apri Tra le Vigne',
+    btnRosso:'Apri Percorso Alfieri',
+    back:'← Torna alla scelta percorso',
+    gps:'📍 Attiva GPS',
+    follow:'🎯 Seguimi',
+    following:'🎯 Sto seguendo',
+    fit:'🔎 Vedi percorso',
+    places:'📍 Luoghi da non perdere',
+    closePlaces:'📍 Chiudi luoghi',
+    bio:'🌿 Quanto è vivo?',
+    closeBio:'🌿 Chiudi vita',
+    change:'🌿 Cambia percorso',
+    statusChoose:'Scegli un percorso.',
+    placeTitle:'📍 Luoghi da non perdere',
+    placeFooter:'L’app suggerisce dove guardare: il resto lo racconta il paesaggio.',
+    bioTitle:'🌿 Quanto è vivo questo paesaggio?',
+    bioHead:'La biodiversità è la ricchezza della vita.',
+    bioText:'Un territorio non è fatto solo di persone, case e vigneti. È una rete di relazioni tra piante, animali, insetti, acqua e suolo.',
+    bioLook:'Durante il cammino prova a cercare:',
+    bioItems:['☐ un uccello','☐ una farfalla o un altro insetto','☐ una pianta selvatica','☐ una siepe','☐ un albero diverso dagli altri','☐ una traccia della presenza dell’acqua'],
+    bioEnd:'Se riesci a trovarne almeno quattro, stai camminando in un ambiente ricco di biodiversità.',
+    loaded:'Percorso di {km} km. La bandierina indica il punto unico di partenza e arrivo. Premi “Attiva GPS” e autorizza la posizione. Puoi aprire i luoghi da non perdere e osservare quanto è vivo il paesaggio.',
+    gpsRequest:'Richiesta posizione in corso...',
+    gpsNo:'GPS non disponibile su questo dispositivo.',
+    geoErr:'Non riesco ad attivare il GPS. Verifica autorizzazioni posizione e connessione HTTPS.',
+    posUpdated:'Posizione aggiornata. Precisione circa {acc} m.',
+    distTrail:'Distanza indicativa dal tracciato: {dist} m.'
+  },
+  en:{
+    subtitle:'Walk with us, we offer you beauty!',
+    chooseTitle:'Choose your route',
+    introSteps:'<strong>Three simple steps:</strong><br>Choose a route, turn on GPS, tap &quot;Follow me&quot;... and off you go!',
+    introLandscape:'<strong>Let the landscape guide you.</strong>',
+    introPrudence:'<strong>Walk carefully:</strong> always follow the actual signs and respect vineyards, woods and private property.',
+    introShoes:'<strong>Before you start:</strong> wear suitable clothing and shoes. Be careful on dirt tracks: they can be muddy, flooded or slippery.',
+    descStoria:'A short walk through places, people and memories of the village.',
+    descAzzurro:'A short and peaceful walk through nature, silence and small views to discover step by step.',
+    descGiallo:'A route through hills and vineyards, in the heart of San Martino Alfieri’s rural landscape.',
+    descRosso:'The widest route: views, hamlets, historical memory and open landscapes over the hills.',
+    btnStoria:'Open San Martino è nella Storia!',
+    btnAzzurro:'Open Tra i Nidi',
+    btnGiallo:'Open Tra le Vigne',
+    btnRosso:'Open Percorso Alfieri',
+    back:'← Back to route choice',
+    gps:'📍 Turn on GPS',
+    follow:'🎯 Follow me',
+    following:'🎯 Following',
+    fit:'🔎 View route',
+    places:'📍 Must-see places',
+    closePlaces:'📍 Close places',
+    bio:'🌿 How alive is it?',
+    closeBio:'🌿 Close nature',
+    change:'🌿 Change route',
+    statusChoose:'Choose a route.',
+    placeTitle:'📍 Must-see places',
+    placeFooter:'The app suggests where to look: the landscape tells the rest.',
+    bioTitle:'🌿 How alive is this landscape?',
+    bioHead:'Biodiversity is the richness of life.',
+    bioText:'A place is not made only of people, houses and vineyards. It is a network of relationships between plants, animals, insects, water and soil.',
+    bioLook:'As you walk, try to find:',
+    bioItems:['☐ a bird','☐ a butterfly or another insect','☐ a wild plant','☐ a hedge','☐ a tree different from the others','☐ a sign of water'],
+    bioEnd:'If you can find at least four, you are walking through a landscape rich in biodiversity.',
+    loaded:'Route of {km} km. The flag marks the shared start and finish point. Tap “Turn on GPS” and allow location access. You can open the must-see places and observe how alive the landscape is.',
+    gpsRequest:'Requesting location...',
+    gpsNo:'GPS is not available on this device.',
+    geoErr:'I cannot turn on GPS. Check location permissions and HTTPS connection.',
+    posUpdated:'Position updated. Accuracy about {acc} m.',
+    distTrail:'Approximate distance from the route: {dist} m.'
+  },
+  de:{
+    subtitle:'Wandern Sie mit uns – wir schenken Ihnen Schönheit!',
+    chooseTitle:'Wählen Sie die Route',
+    introSteps:'<strong>Drei einfache Schritte:</strong><br>Wählen Sie die Route, aktivieren Sie GPS, tippen Sie auf &quot;Folge mir&quot;... und los geht&rsquo;s!',
+    introLandscape:'<strong>Lassen Sie sich von der Landschaft führen.</strong>',
+    introPrudence:'<strong>Gehen Sie aufmerksam:</strong> Folgen Sie immer der tatsächlichen Beschilderung und respektieren Sie Weinberge, Wälder und Privateigentum.',
+    introShoes:'<strong>Vor dem Start:</strong> Tragen Sie geeignete Kleidung und Schuhe. Achten Sie auf unbefestigte Wege: sie können matschig, überschwemmt oder rutschig sein.',
+    descStoria:'Ein kurzer Spaziergang durch Orte, Persönlichkeiten und Erinnerungen des Dorfes.',
+    descAzzurro:'Ein kurzer, ruhiger Weg durch Natur, Stille und kleine Ausblicke, die man Schritt für Schritt entdeckt.',
+    descGiallo:'Eine Route durch Hügel und Weinberge, im Herzen der ländlichen Landschaft von San Martino Alfieri.',
+    descRosso:'Die weiteste Route: Panoramen, Weiler, historische Erinnerung und offene Ausblicke über die Hügel.',
+    btnStoria:'San Martino è nella Storia! öffnen',
+    btnAzzurro:'Tra i Nidi öffnen',
+    btnGiallo:'Tra le Vigne öffnen',
+    btnRosso:'Percorso Alfieri öffnen',
+    back:'← Zur Routenauswahl',
+    gps:'📍 GPS aktivieren',
+    follow:'🎯 Folge mir',
+    following:'🎯 Ich folge',
+    fit:'🔎 Route anzeigen',
+    places:'📍 Sehenswertes',
+    closePlaces:'📍 Sehenswertes schließen',
+    bio:'🌿 Wie lebendig?',
+    closeBio:'🌿 Natur schließen',
+    change:'🌿 Route wechseln',
+    statusChoose:'Wählen Sie eine Route.',
+    placeTitle:'📍 Sehenswertes',
+    placeFooter:'Die App zeigt, wohin man schauen kann: Den Rest erzählt die Landschaft.',
+    bioTitle:'🌿 Wie lebendig ist diese Landschaft?',
+    bioHead:'Biodiversität ist der Reichtum des Lebens.',
+    bioText:'Ein Gebiet besteht nicht nur aus Menschen, Häusern und Weinbergen. Es ist ein Netz von Beziehungen zwischen Pflanzen, Tieren, Insekten, Wasser und Boden.',
+    bioLook:'Versuchen Sie unterwegs zu entdecken:',
+    bioItems:['☐ einen Vogel','☐ einen Schmetterling oder ein anderes Insekt','☐ eine Wildpflanze','☐ eine Hecke','☐ einen Baum, der sich von den anderen unterscheidet','☐ ein Zeichen von Wasser'],
+    bioEnd:'Wenn Sie mindestens vier finden, wandern Sie durch eine Landschaft mit reicher Biodiversität.',
+    loaded:'Route von {km} km. Die Fahne markiert den gemeinsamen Start- und Zielpunkt. Tippen Sie auf „GPS aktivieren“ und erlauben Sie den Standortzugriff. Sie können die sehenswerten Orte öffnen und beobachten, wie lebendig die Landschaft ist.',
+    gpsRequest:'Standort wird angefordert...',
+    gpsNo:'GPS ist auf diesem Gerät nicht verfügbar.',
+    geoErr:'GPS kann nicht aktiviert werden. Prüfen Sie Standortberechtigungen und HTTPS-Verbindung.',
+    posUpdated:'Position aktualisiert. Genauigkeit etwa {acc} m.',
+    distTrail:'Ungefähre Entfernung von der Route: {dist} m.'
+  }
+};
+const BIO_PROMPTS={
+"storia":"Anche la biodiversità ha una storia: il paesaggio che vedi nasce da secoli di relazioni tra uomo e natura.",
 "azzurro":"Riesci a distinguere almeno tre canti diversi di uccelli?",
 "giallo":"Osserva i margini dei campi: la vita spesso si nasconde ai bordi.",
 "rosso":"Guarda quante volte cambia il paesaggio durante il cammino."
 };
+const BIO_PROMPTS_EN={
+"storia":"Biodiversity also has a history: this landscape is the result of centuries of relationships between people and nature.",
+"azzurro":"Can you hear at least three different bird songs?",
+"giallo":"Look at the field margins: life often hides at the edges.",
+"rosso":"Notice how many times the landscape changes along the walk."
+};
+const BIO_PROMPTS_DE={
+"storia":"Auch die Biodiversität hat eine Geschichte: Diese Landschaft ist das Ergebnis jahrhundertelanger Beziehungen zwischen Mensch und Natur.",
+"azzurro":"Können Sie mindestens drei verschiedene Vogelstimmen unterscheiden?",
+"giallo":"Achten Sie auf die Feldränder: Das Leben verbirgt sich oft an den Rändern.",
+"rosso":"Beobachten Sie, wie oft sich die Landschaft unterwegs verändert."
+};
+const PLACES={"storia":[{"t":"Bacheche storiche","d":"Fermati qualche minuto e scopri i personaggi che hanno incrociato la storia di San Martino Alfieri."},{"t":"Casa di San Giuseppe Marello","d":"Qui trascorse parte della sua giovinezza il futuro santo fondatore degli Oblati di San Giuseppe."},{"t":"Castello Marchesi Alfieri","d":"Il simbolo di San Martino Alfieri e della famiglia che ha segnato la storia del paese."},{"t":"Chiesa Parrocchiale","d":"Da secoli è il cuore religioso e comunitario di San Martino Alfieri."},{"t":"Statua di San Giuseppe Marello","d":"Un invito a ricordare uno dei figli più illustri legati a questo territorio."},{"t":"Belvedere","d":"Guardati intorno: Roero, Monferrato e, nelle giornate limpide, le Alpi."}],"azzurro":[{"t":"Oasi LIPU","d":"Un luogo di natura e biodiversità: camminando con calma si entra nello spirito più silenzioso del Sentiero Azzurro."},{"t":"Casa di San Giuseppe Marello","d":"Il percorso sfiora il luogo legato alla giovinezza di San Giuseppe Marello, fondatore degli Oblati di San Giuseppe."},{"t":"Belvedere","d":"Uno dei punti più belli del paese: vista aperta verso il Roero e, nelle giornate limpide, fino all’arco delle Alpi."}],"giallo":[{"t":"Collina Sansoero","d":"All’inizio del percorso si sale verso un punto da cui si osservano bene il Castello Marchesi Alfieri e il suo parco."},{"t":"Chiesetta dell’Assunta","d":"Piccolo luogo di sosta e raccoglimento, con vista sui vigneti, sul castello e sul paese."},{"t":"Paesaggio vitivinicolo","d":"Il Sentiero Giallo attraversa colline coltivate che raccontano il lavoro agricolo e la tradizione del vino."}],"rosso":[{"t":"Palazzo Garibaldi","d":"Sul percorso si incontra il luogo legato a Francesca Armosino e Giuseppe Garibaldi, memoria viva della storia nazionale."},{"t":"Panchina Gigante","d":"Un punto di sosta curioso e panoramico, ideale per fermarsi, respirare e guardare le colline da una prospettiva diversa."},{"t":"Bricco Riondino","d":"Sfiorato dal Percorso Alfieri, offre uno degli affacci più suggestivi sul paesaggio collinare di San Martino Alfieri."}]};
+const PLACES_EN={
+"storia":[{"t":"Historical boards","d":"Stop for a few minutes and discover the people who crossed the history of San Martino Alfieri."},{"t":"House of Saint Giuseppe Marello","d":"Here the future saint, founder of the Oblates of Saint Joseph, spent part of his youth."},{"t":"Marchesi Alfieri Castle","d":"The symbol of San Martino Alfieri and of the family that marked the village’s history."},{"t":"Parish Church","d":"For centuries it has been the religious and community heart of San Martino Alfieri."},{"t":"Statue of Saint Giuseppe Marello","d":"An invitation to remember one of the most important figures linked to this land."},{"t":"Belvedere","d":"Look around: Roero, Monferrato and, on clear days, the Alps."}],
+"azzurro":[{"t":"LIPU Oasis","d":"A place of nature and biodiversity: walking slowly, you enter the quiet spirit of the Blue Trail."},{"t":"House of Saint Giuseppe Marello","d":"The route passes near the place linked to the youth of Saint Giuseppe Marello, founder of the Oblates of Saint Joseph."},{"t":"Belvedere","d":"One of the most beautiful viewpoints of the village: an open view towards Roero and, on clear days, the Alpine arc."}],
+"giallo":[{"t":"Sansoero Hill","d":"At the beginning of the route you climb towards a point with a fine view of the Marchesi Alfieri Castle and its park."},{"t":"Church of the Assumption","d":"A small place to rest and pause, with views over vineyards, the castle and the village."},{"t":"Wine-growing landscape","d":"The Yellow Trail crosses cultivated hills that tell the story of farming work and wine tradition."}],
+"rosso":[{"t":"Garibaldi Palace","d":"Along the route you meet the place linked to Francesca Armosino and Giuseppe Garibaldi, a living memory of national history."},{"t":"Big Bench","d":"A curious panoramic rest point: stop, breathe and look at the hills from a different perspective."},{"t":"Bricco Riondino","d":"Skimmed by the Alfieri Route, it offers one of the most suggestive views of San Martino Alfieri’s hilly landscape."}]
+};
+const PLACES_DE={
+"storia":[{"t":"Historische Tafeln","d":"Halten Sie einen Moment inne und entdecken Sie die Persönlichkeiten, die mit der Geschichte von San Martino Alfieri verbunden sind."},{"t":"Haus des heiligen Giuseppe Marello","d":"Hier verbrachte der spätere Heilige und Gründer der Oblaten des heiligen Joseph einen Teil seiner Jugend."},{"t":"Schloss Marchesi Alfieri","d":"Das Wahrzeichen von San Martino Alfieri und der Familie, die die Geschichte des Dorfes geprägt hat."},{"t":"Pfarrkirche","d":"Seit Jahrhunderten ist sie das religiöse und gemeinschaftliche Herz von San Martino Alfieri."},{"t":"Statue des heiligen Giuseppe Marello","d":"Eine Einladung, an eine der bedeutendsten Persönlichkeiten dieses Gebietes zu erinnern."},{"t":"Belvedere","d":"Schauen Sie sich um: Roero, Monferrato und an klaren Tagen die Alpen."}],
+"azzurro":[{"t":"LIPU-Oase","d":"Ein Ort der Natur und Biodiversität: Wer langsam geht, entdeckt den stillen Geist des Blauen Weges."},{"t":"Haus des heiligen Giuseppe Marello","d":"Die Route führt nahe an dem Ort vorbei, der mit der Jugend des heiligen Giuseppe Marello verbunden ist."},{"t":"Belvedere","d":"Einer der schönsten Aussichtspunkte des Dorfes: offener Blick zum Roero und an klaren Tagen bis zum Alpenbogen."}],
+"giallo":[{"t":"Sansoero-Hügel","d":"Am Anfang der Route steigt man zu einem Punkt auf, von dem man Schloss Marchesi Alfieri und seinen Park gut sehen kann."},{"t":"Kirchlein der Aufnahme Mariens","d":"Ein kleiner Ort zum Ausruhen und Innehalten, mit Blick auf Weinberge, Schloss und Dorf."},{"t":"Weinlandschaft","d":"Der Gelbe Weg durchquert bewirtschaftete Hügel, die von landwirtschaftlicher Arbeit und Weintradition erzählen."}],
+"rosso":[{"t":"Palazzo Garibaldi","d":"Entlang der Route begegnet man dem Ort, der mit Francesca Armosino und Giuseppe Garibaldi verbunden ist."},{"t":"Riesenbank","d":"Ein ungewöhnlicher panoramischer Rastplatz: innehalten, atmen und die Hügel aus einer anderen Perspektive betrachten."},{"t":"Bricco Riondino","d":"Vom Percorso Alfieri gestreift, bietet er einen der eindrucksvollsten Ausblicke auf die Hügellandschaft von San Martino Alfieri."}]
+};
 let map=null,tileLayer=null,trailLayer=null,startEndLayer=null,userMarker=null,accuracyCircle=null,watchId=null,following=false,currentTrail=null;
+function setLang(lang){
+  currentLang=lang;
+  document.documentElement.lang=lang;
+  document.getElementById('itBtn').classList.toggle('active',lang==='it');
+  document.getElementById('enBtn').classList.toggle('active',lang==='en');
+  document.getElementById('deBtn').classList.toggle('active',lang==='de');
+  const tx=UI_TEXT[lang];
+  const setHTML=(id,val)=>{const el=document.getElementById(id); if(el) el.innerHTML=val;};
+  const setText=(id,val)=>{const el=document.getElementById(id); if(el) el.textContent=val;};
+  setText('appSubtitle',tx.subtitle);
+  setText('chooseTitle',tx.chooseTitle);
+  setHTML('introSteps',tx.introSteps);
+  setHTML('introLandscape',tx.introLandscape);
+  setHTML('introPrudence',tx.introPrudence);
+  setHTML('introShoes',tx.introShoes);
+  ['descStoria','descAzzurro','descGiallo','descRosso','btnStoria','btnAzzurro','btnGiallo','btnRosso'].forEach(id=>setText(id,tx[id]));
+  setText('backBtn',tx.back); setText('gpsBtn',tx.gps); setText('fitBtn',tx.fit); setText('placesBtn',tx.places); setText('bioBtn',tx.bio); setText('changeBtn',tx.change);
+  if(!following) setText('followBtn',tx.follow); else setText('followBtn',tx.following);
+  if(!currentTrail) setText('status',tx.statusChoose);
+  if(document.getElementById('placesPanel').style.display==='block'){document.getElementById('placesPanel').innerHTML=renderPlaces(); document.getElementById('placesBtn').textContent=tx.closePlaces;}
+  if(document.getElementById('bioPanel').style.display==='block'){document.getElementById('bioPanel').innerHTML=renderBio(); document.getElementById('bioBtn').textContent=tx.closeBio;}
+  if(currentTrail) drawTrail(currentTrail);
+}
 function initMap(){
   if(map) return;
   map=L.map('map',{preferCanvas:true,zoomControl:true}).setView([44.82,8.11],15);
@@ -61,8 +233,41 @@ function initMap(){
 }
 function renderPlaces(){
   if(!currentTrail) return '';
-  const list=PLACES[currentTrail]||[];
-  return '<h3 style="margin:0 0 6px">📍 Luoghi da non perdere</h3>'+list.map(x=>'<div class="place"><h3>'+escapeHtml(x.t)+'</h3><p>'+escapeHtml(x.d)+'</p></div>').join('')+'<p class="small" style="margin:8px 0 0">L’app suggerisce dove guardare: il resto lo racconta il paesaggio.</p>';
+  const placeMap = currentLang==='en' ? PLACES_EN : (currentLang==='de' ? PLACES_DE : PLACES);
+  const list=(placeMap[currentTrail])||[];
+  const tx=UI_TEXT[currentLang];
+  return '<h3 style="margin:0 0 6px">'+tx.placeTitle+'</h3>'+list.map(x=>'<div class="place"><h3>'+escapeHtml(x.t)+'</h3><p>'+escapeHtml(x.d)+'</p></div>').join('')+'<p class="small" style="margin:8px 0 0">'+tx.placeFooter+'</p>';
+}
+function renderBio(){
+  const bioMap = currentLang==='en' ? BIO_PROMPTS_EN : (currentLang==='de' ? BIO_PROMPTS_DE : BIO_PROMPTS);
+  const prompt=currentTrail ? bioMap[currentTrail] : "";
+  const tx=UI_TEXT[currentLang];
+  return '<h3 style="margin:0 0 6px">'+tx.bioTitle+'</h3>'+
+    '<div class="bioBox"><h3>'+tx.bioHead+'</h3>'+
+    '<p>'+tx.bioText+'</p>'+
+    '<p><strong>'+tx.bioLook+'</strong></p>'+
+    '<ul class="bioList">'+tx.bioItems.map(x=>'<li>'+x+'</li>').join('')+'</ul>'+
+    '<p style="margin-top:10px">'+tx.bioEnd+'</p>'+
+    '<p><strong>'+escapeHtml(prompt)+'</strong></p>'+
+    '</div>';
+}
+function toggleBio(){
+  const box=document.getElementById('bioPanel');
+  const btn=document.getElementById('bioBtn');
+  const open=box.style.display==='block';
+  if(open){closeBio();return;}
+  closePlaces();
+  box.innerHTML=renderBio();
+  box.style.display='block';
+  btn.textContent=UI_TEXT[currentLang].closeBio;
+}
+function closeBio(){
+  const box=document.getElementById('bioPanel');
+  const btn=document.getElementById('bioBtn');
+  if(!box || !btn) return;
+  box.style.display='none';
+  box.innerHTML='';
+  btn.textContent=UI_TEXT[currentLang].bio;
 }
 function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function togglePlaces(){
@@ -73,41 +278,14 @@ function togglePlaces(){
   closeBio();
   box.innerHTML=renderPlaces();
   box.style.display='block';
-  btn.textContent='📍 Chiudi luoghi';
+  btn.textContent=UI_TEXT[currentLang].closePlaces;
 }
 function closePlaces(){
   const box=document.getElementById('placesPanel');
   const btn=document.getElementById('placesBtn');
   box.style.display='none';
   box.innerHTML='';
-  btn.textContent='📍 Luoghi da non perdere';
-}
-function renderBio(){
-  const note=BIO_NOTES[currentTrail]||"Guarda con attenzione: ogni ambiente racconta una forma diversa di vita.";
-  return '<h3 style="margin:0 0 6px">🌿 Quanto è vivo questo paesaggio?</h3>'+
-    '<div class="bioNote"><p><strong>La biodiversità è la ricchezza della vita.</strong></p><p>Un territorio non è fatto solo di persone, case e vigneti. È una rete di relazioni tra piante, animali, insetti, acqua e suolo.</p></div>'+
-    '<div class="bioNote"><p><strong>Durante il cammino prova a cercare:</strong></p><ul class="checklist">'+
-    '<li>☐ un uccello</li><li>☐ una farfalla o un altro insetto</li><li>☐ una pianta selvatica</li><li>☐ una siepe</li><li>☐ un albero diverso dagli altri</li><li>☐ una traccia della presenza dell’acqua</li>'+
-    '</ul></div>'+
-    '<div class="bioNote"><p>'+escapeHtml(note)+'</p><p><strong>Se riesci a trovarne almeno quattro, stai camminando in un ambiente ricco di vita.</strong></p></div>';
-}
-function toggleBio(){
-  const box=document.getElementById('bioPanel');
-  const btn=document.getElementById('bioBtn');
-  const open=box.style.display==='block';
-  if(open){closeBio();return;}
-  closePlaces();
-  box.innerHTML=renderBio();
-  box.style.display='block';
-  btn.textContent='🌿 Chiudi paesaggio';
-}
-function closeBio(){
-  const box=document.getElementById('bioPanel');
-  const btn=document.getElementById('bioBtn');
-  if(!box||!btn) return;
-  box.style.display='none';
-  box.innerHTML='';
-  btn.textContent='🌿 Paesaggio vivo';
+  btn.textContent=UI_TEXT[currentLang].places;
 }
 function openTrail(key){
   currentTrail=key;
@@ -121,7 +299,7 @@ function openTrail(key){
 function closeMap(){
   document.getElementById('mapPage').style.display='none';
   document.getElementById('appPage').style.display='block';
-  following=false; document.getElementById('followBtn').textContent='🎯 Seguimi';
+  following=false; document.getElementById('followBtn').textContent=UI_TEXT[currentLang].follow;
   closePlaces();
   closeBio();
 }
@@ -130,15 +308,15 @@ function drawTrail(key){
   [trailLayer,startEndLayer].forEach(x=>{if(x) map.removeLayer(x);});
   const arr=TRAILS[key].points;
   trailLayer=L.polyline(arr,{color:INFO[key].color,weight:6,opacity:.98,lineJoin:'round'}).addTo(map);
-  startEndLayer=L.layerGroup([L.circleMarker(arr[0],{radius:16,color:'#111',weight:4,fillColor:INFO[key].color,fillOpacity:.25}),L.marker(arr[0],{icon:L.divIcon({className:'startEndIcon',html:'<div class="startEndPin">🏁</div><div class="startEndLabel">PARTENZA / ARRIVO</div>',iconSize:[58,76],iconAnchor:[29,58]})}).bindPopup('Partenza e arrivo: stesso punto')]).addTo(map);
+  startEndLayer=L.layerGroup([L.circleMarker(arr[0],{radius:16,color:'#111',weight:4,fillColor:INFO[key].color,fillOpacity:.25}),L.marker(arr[0],{icon:L.divIcon({className:'startEndIcon',html:'<div class="startEndPin">🏁</div><div class="startEndLabel">'+(currentLang==='en'?'START / FINISH':(currentLang==='de'?'START / ZIEL':'PARTENZA / ARRIVO'))+'</div>',iconSize:[58,76],iconAnchor:[29,58]})}).bindPopup(currentLang==='en'?'Start and finish: same point':(currentLang==='de'?'Start und Ziel: gleicher Punkt':'Partenza e arrivo: stesso punto'))]).addTo(map);
   fitTrail();
-  document.getElementById('status').innerHTML='<strong>'+INFO[key].title+'</strong><br>Percorso di '+TRAILS[key].km.toFixed(2).replace('.',',')+' km. La bandierina indica il punto unico di partenza e arrivo. Premi “Attiva GPS” e autorizza la posizione. Puoi aprire i luoghi da non perdere e il paesaggio vivo quando vuoi.';
+  document.getElementById('status').innerHTML='<strong>'+INFO[key].title+'</strong><br>'+UI_TEXT[currentLang].loaded.replace('{km}',TRAILS[key].km.toFixed(2).replace('.',','));
 }
 function fitTrail(){if(trailLayer&&map) map.fitBounds(trailLayer.getBounds(),{padding:[28,28]});}
-function toggleFollow(){following=!following;document.getElementById('followBtn').textContent=following?'🎯 Sto seguendo':'🎯 Seguimi';}
+function toggleFollow(){following=!following;document.getElementById('followBtn').textContent=following?UI_TEXT[currentLang].following:UI_TEXT[currentLang].follow;}
 function activateGPS(){
-  if(!navigator.geolocation){document.getElementById('status').textContent='GPS non disponibile su questo dispositivo.';return;}
-  document.getElementById('status').innerHTML='Richiesta posizione in corso...';
+  if(!navigator.geolocation){document.getElementById('status').textContent=UI_TEXT[currentLang].gpsNo;return;}
+  document.getElementById('status').innerHTML=UI_TEXT[currentLang].gpsRequest;
   if(watchId) navigator.geolocation.clearWatch(watchId);
   watchId=navigator.geolocation.watchPosition(onPosition,onGeoError,{enableHighAccuracy:true,maximumAge:1000,timeout:12000});
 }
@@ -148,11 +326,11 @@ function onPosition(pos){
   if(!userMarker) userMarker=L.circleMarker(p,{radius:9,color:'#111',weight:2,fillColor:'#e53935',fillOpacity:1}).addTo(map).bindPopup('La tua posizione'); else userMarker.setLatLng(p);
   if(!accuracyCircle) accuracyCircle=L.circle(p,{radius:acc,color:'#e53935',weight:1,fillOpacity:.07}).addTo(map); else accuracyCircle.setLatLng(p).setRadius(acc);
   if(following) map.setView(p,17);
-  let msg='Posizione aggiornata. Precisione circa '+acc+' m.';
-  if(currentTrail) msg += '<br>Distanza indicativa dal tracciato: '+Math.round(distanceToTrail(p,TRAILS[currentTrail].points))+' m.';
+  let msg=UI_TEXT[currentLang].posUpdated.replace('{acc}',acc);
+  if(currentTrail) msg += '<br>'+UI_TEXT[currentLang].distTrail.replace('{dist}',Math.round(distanceToTrail(p,TRAILS[currentTrail].points)));
   document.getElementById('status').innerHTML=msg;
 }
-function onGeoError(err){document.getElementById('status').innerHTML='Non riesco ad attivare il GPS. Verifica autorizzazioni posizione e connessione HTTPS.';}
+function onGeoError(err){document.getElementById('status').innerHTML=UI_TEXT[currentLang].geoErr;}
 function distanceToTrail(p,arr){let best=Infinity;for(let i=1;i<arr.length;i++) best=Math.min(best,distSeg(p,arr[i-1],arr[i]));return best;}
 function distSeg(p,a,b){const R=6371000,lat0=p[0]*Math.PI/180;function xy(q){return [q[1]*Math.PI/180*Math.cos(lat0)*R,q[0]*Math.PI/180*R];}const [px,py]=xy(p),[ax,ay]=xy(a),[bx,by]=xy(b);const dx=bx-ax,dy=by-ay;if(dx===0&&dy===0)return Math.hypot(px-ax,py-ay);let t=((px-ax)*dx+(py-ay)*dy)/(dx*dx+dy*dy);t=Math.max(0,Math.min(1,t));return Math.hypot(px-(ax+t*dx),py-(ay+t*dy));}
 </script>
